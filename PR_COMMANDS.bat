@@ -1,0 +1,1 @@
+@echo off&#10;echo Completing PR creation...&#10;gh auth login&#10;git push origin blackboxai/pr-task-final&#10;gh pr create --title "blackboxai/restore-pre-modify: original versions" --body "Restore from saves, commit 3160c3b" --base main --head blackboxai/pr-task-final -w&#10;pause

@@ -1,0 +1,124 @@
+.Welcome {
+  flex: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+}
+
+.welcome-fadein {
+  animation: welcomeFadeIn 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes welcomeFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.welcome-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.welcome-logo {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  border-radius: 20px;
+  animation: welcomeFadeIn 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.welcome-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #1a2a4a;
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+.welcome-subtitle {
+  font-size: 16px;
+  color: #667085;
+  margin: 0;
+  line-height: 1.5;
+  max-width: 500px;
+}
+
+.welcome-nav {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 220px;
+}
+
+.welcome-nav li {
+  padding: 12px 20px;
+  background: rgba(255, 255, 255, 0.75);
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a2a4a;
+  border: 1px solid rgba(200, 163, 75, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.welcome-nav li svg {
+  width: 24px;
+  height: 24px;
+  color: #c8a34b;
+  flex-shrink: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  filter: drop-shadow(0 2px 4px rgba(200, 163, 75, 0.2));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.welcome-nav li:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(200, 163, 75, 0.15) 0%,
+    rgba(200, 163, 75, 0.08) 100%
+  );
+  border-color: rgba(200, 163, 75, 0.7);
+  transform: translateX(5px);
+  box-shadow: 0 4px 12px rgba(200, 163, 75, 0.15);
+}
+
+.welcome-nav li:hover svg {
+  color: #1a2a4a;
+  filter: drop-shadow(0 4px 8px rgba(200, 163, 75, 0.3));
+  transform: scale(1.1);
+}
+
+.welcome-nav li:active {
+  transform: translateX(3px);
+}
+
+.welcome-note {
+  font-size: 13px;
+  color: #8b92a4;
+  margin: 0;
+  padding: 12px 20px;
+  background: rgba(76, 175, 80, 0.08);
+  border-radius: 12px;
+  border: 1px solid rgba(76, 175, 80, 0.15);
+}

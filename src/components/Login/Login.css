@@ -1,0 +1,101 @@
+.login {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login .item {
+  width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  background-color: #0021478d;
+  border-radius: 10px;
+  padding: 40px;
+  color: #ffffff;
+}
+
+.toggle-header {
+  display: flex;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.toggle-header button {
+  flex: 1;
+  background: none;
+  border: none;
+  padding: 10px;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+  border-bottom: 2px solid transparent;
+  transition: 0.3s;
+}
+
+.toggle-header button.active {
+  border-bottom: 2px solid #ffffff;
+  color: #ffffff;
+}
+
+.login .item form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+}
+
+.login .item form input {
+  width: 100%;
+  padding: 15px;
+  border: none;
+  outline: none;
+  background-color: rgb(245, 245, 242);
+  border-radius: 10px;
+}
+
+.login .item form label {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: 14px;
+}
+
+.login .item form label img {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.login .item form button {
+  width: 100%;
+  padding: 15px;
+  border: none;
+  background-color: #002147;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
+}
+img {
+  width: 220px;
+  height: 60px;
+}
+
+.login .item h1,
+.login .item h2 {
+  color: white;
+}
+
+.toggle-header button:hover {
+  background: none;
+  color: white;
+}

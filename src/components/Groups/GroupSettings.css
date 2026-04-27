@@ -1,0 +1,147 @@
+.group-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+}
+
+.group-settings-header {
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid #001c3012;
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.group-settings-header img {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #c5a35844;
+}
+
+.group-settings-header h3 {
+  margin: 0;
+  color: #001c30;
+}
+
+.group-settings-header p {
+  margin: 3px 0 0;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.group-settings-card {
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid #001c3012;
+  padding: 14px;
+}
+
+.group-settings-card h4 {
+  margin: 0 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #001c30;
+}
+
+.group-settings-card p {
+  margin: 4px 0;
+  font-size: 13px;
+  color: #475569;
+}
+
+.group-settings-members {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.group-settings-member {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.member-main {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.member-main img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.member-main span {
+  font-size: 14px;
+  color: #0f172a;
+}
+
+.group-settings-member button,
+.group-settings-actions button {
+  border: 1px solid #c5a35866;
+  background: #fff7e8;
+  color: #7c5b1a;
+  border-radius: 999px;
+  height: 32px;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.group-settings-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.group-settings-actions .leave-btn {
+  justify-content: center;
+  background: #f8fafc;
+  border-color: #001c3033;
+  color: #001c30;
+}
+
+.group-settings-actions .delete-btn {
+  justify-content: center;
+  background: #fff1f2;
+  border-color: #ef444433;
+  color: #b91c1c;
+}
+
+.Details.dark .group-settings-header,
+.Details.dark .group-settings-card {
+  background: #1e293b;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.Details.dark .group-settings-header h3,
+.Details.dark .group-settings-card h4,
+.Details.dark .member-main span {
+  color: #f8fafc;
+}
+
+.Details.dark .group-settings-header p,
+.Details.dark .group-settings-card p {
+  color: #94a3b8;
+}
+
+.Details.dark .group-settings-member button,
+.Details.dark .group-settings-actions .leave-btn {
+  background: rgba(197, 163, 88, 0.15);
+  color: #f8fafc;
+  border-color: rgba(197, 163, 88, 0.45);
+}

@@ -1,0 +1,847 @@
+/* ═══════════════════════════════════════════════════════
+   DETAILS PANEL  –  Telegram Desktop Style
+═══════════════════════════════════════════════════════ */
+
+.Details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: #f4f4f5; /* Light gray background like TG */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 33, 71, 0.15) transparent;
+}
+
+.Details::-webkit-scrollbar {
+  width: 4px;
+}
+.Details::-webkit-scrollbar-thumb {
+  background: rgba(0, 33, 71, 0.15);
+  border-radius: 4px;
+}
+
+/* ══ HEADER / PROFILE BANNER ═══════════════════════════ */
+.det-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 20px 24px;
+  background: #fff;
+  position: relative;
+}
+
+/* Avatar */
+.det-avatar-ring {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.det-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}
+
+.group-det-avatar-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #002147, #0d4d8b);
+  color: #f8fafc;
+  font-size: 42px;
+  font-weight: 700;
+}
+
+/* Mute badge over avatar */
+.det-mute-badge {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #a1a1aa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #fff;
+}
+
+/* Name Row */
+.det-name-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.det-name-row {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.det-name {
+  font-size: 20px;
+  font-weight: 600;
+  color: #000;
+  margin: 0;
+  letter-spacing: -0.3px;
+  text-align: center;
+}
+
+.det-edit-hint {
+  position: absolute;
+  right: -24px;
+  font-size: 14px;
+  opacity: 0;
+  transition: opacity 0.2s;
+  color: #888;
+}
+
+.det-name-row:hover .det-edit-hint {
+  opacity: 1;
+}
+
+.det-sub {
+  font-size: 14px;
+  color: #888;
+  margin: 4px 0 24px;
+  text-align: center;
+  width: 100%;
+}
+
+/* ══ EDIT PSEUDO ═══════════════════════════════════════ */
+.det-pseudo-edit {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  width: 100%;
+}
+
+.det-pseudo-edit input {
+  background: #f4f4f5;
+  border: 1px solid #e4e4e7;
+  border-radius: 8px;
+  color: #000;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 6px 12px;
+  width: 180px;
+  outline: none;
+  text-align: center;
+}
+
+.det-pseudo-edit button {
+  background: #f4f4f5;
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.det-pseudo-edit button.save-btn:hover {
+  background: #d1fae5;
+  color: #10b981;
+}
+.det-pseudo-edit button.cancel-btn:hover {
+  background: #fee2e2;
+  color: #ef4444;
+}
+
+/* ══ QUICK ACTIONS (Call, Mute, Search) ════════════════ */
+.det-quick-actions {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.det-action-circle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  background: none;
+  color: #c5a059;
+  border: none;
+  cursor: pointer;
+  width: 80px; /* Force identical footprint so text width doesn't off-center them */
+}
+
+.det-action-circle:hover .det-circle-icon {
+  background: #fdfaf3;
+}
+
+.det-action-circle:active .det-circle-icon {
+  transform: scale(0.95);
+}
+
+.det-circle-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid #e4e4e7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.det-action-circle span {
+  font-size: 12px;
+  font-weight: 500;
+  color: #000;
+  text-align: center;
+}
+
+/* ══ SECTION SPACER ════════════════════════════════════ */
+.det-section-spacer {
+  height: 10px;
+  flex-shrink: 0;
+  background: transparent;
+}
+
+/* ══ USER INFO BLOCK ═══════════════════════════════════ */
+.det-info-block-main {
+  background: #fff;
+  padding: 8px 0;
+}
+
+.det-info-row {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 24px;
+  cursor: text;
+}
+
+.det-info-label {
+  font-size: 13px;
+  color: #888;
+  margin-bottom: 2px;
+}
+
+.det-info-value {
+  font-size: 15px;
+  color: #000;
+}
+
+/* ══ GENERAL LIST ITEMS ════════════════════════════════ */
+.det-list {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  padding: 8px 0;
+}
+
+.det-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.det-item:hover {
+  background: #f4f4f5;
+}
+
+.det-item:active {
+  transform: scale(0.99);
+}
+
+.det-item-icon-left {
+  margin-right: 20px;
+  flex-shrink: 0;
+  color: #002147;
+}
+
+.det-item-text {
+  font-size: 15px;
+  color: #000;
+  font-weight: 500;
+}
+
+.det-item-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.det-item-subtext {
+  font-size: 13px;
+  color: #888;
+  margin-top: 2px;
+}
+
+/* Danger actions */
+.det-item.danger .det-item-text,
+.det-item.danger .det-item-icon-left {
+  color: #ef4444;
+}
+
+.det-item.danger:hover {
+  background: #fee2e2;
+}
+
+/* Badge count */
+.det-badge {
+  margin-left: auto;
+  color: #888;
+  font-size: 15px;
+}
+
+/* ══ TOGGLE ════════════════════════════════════════════ */
+.det-toggle {
+  margin-left: auto;
+  width: 36px;
+  height: 20px;
+  border-radius: 10px;
+  background: #d1d5db;
+  position: relative;
+  transition: background 0.28s ease;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.det-toggle.on {
+  background: #34d399;
+}
+
+.det-toggle-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.det-toggle.on .det-toggle-thumb {
+  transform: translateX(16px);
+}
+
+/* ══ SUB-SECTIONS (Media / Files) ══════════════════════ */
+.det-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 16px 14px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  background: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.det-section-header h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #000;
+  margin: 0;
+}
+
+.det-back-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #000;
+  padding: 6px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.det-back-btn:hover {
+  background: #f4f4f5;
+}
+
+/* Media Grid */
+.det-media-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  padding: 2px;
+  background: #fff;
+}
+
+.det-media-thumb {
+  position: relative;
+  aspect-ratio: 1;
+  cursor: pointer;
+  background: #e5e7eb;
+}
+
+.det-media-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.det-media-date {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.5));
+  color: #fff;
+  font-size: 10px;
+  padding: 10px 4px 4px;
+  text-align: center;
+  opacity: 0;
+}
+.det-media-thumb:hover .det-media-date {
+  opacity: 1;
+}
+
+/* Lightbox */
+.det-lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.9);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.det-lightbox img {
+  max-width: 90vw;
+  max-height: 90vh;
+  border-radius: 4px;
+  object-fit: contain;
+}
+
+/* File List */
+.det-file-list {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+}
+
+.det-file-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 24px;
+  text-decoration: none;
+  color: #000;
+  border-bottom: 1px solid #f4f4f5;
+}
+.det-file-item:hover {
+  background: #f4f4f5;
+}
+
+.det-file-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: #002147;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.det-file-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.det-file-name {
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.det-file-date {
+  font-size: 12px;
+  color: #888;
+}
+
+/* Empty State */
+.det-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 60px 20px;
+  color: #888;
+  background: #fff;
+  flex: 1;
+}
+
+.group-det-hero .det-quick-actions {
+  margin-top: 4px;
+}
+
+.group-det-edit-box {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 14px;
+}
+
+.group-det-edit-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #002147;
+}
+
+.group-det-edit-box input,
+.group-det-edit-box textarea {
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  padding: 10px 12px;
+  outline: none;
+  font: inherit;
+  background: #fff;
+  color: #111827;
+  resize: vertical;
+}
+
+.group-det-edit-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.group-det-edit-actions button,
+.group-det-member-actions button,
+.group-det-file-btn {
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.group-det-edit-actions button {
+  padding: 9px 16px;
+  background: #eef2f7;
+  color: #002147;
+}
+
+.group-det-edit-actions button:last-child {
+  background: #c5a059;
+  color: #fff;
+}
+
+.group-det-inline-input {
+  margin-top: 6px;
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: #fff;
+  color: #111827;
+  font: inherit;
+  outline: none;
+}
+
+.group-det-inline-textarea {
+  resize: vertical;
+}
+
+.group-det-manage-save {
+  display: flex;
+  justify-content: flex-end;
+  padding: 8px 24px 0;
+}
+
+.group-det-manage-save button {
+  border: none;
+  border-radius: 999px;
+  padding: 9px 16px;
+  background: #c5a059;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.group-det-members {
+  padding: 10px 0;
+}
+
+.group-det-members-header {
+  padding: 6px 24px 12px;
+  color: #002147;
+  font-size: 15px;
+}
+
+.group-det-member-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 24px;
+}
+
+.group-det-member-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.group-det-member-main img {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.group-det-member-main div {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.group-det-member-main span {
+  font-size: 15px;
+  font-weight: 600;
+  color: #000;
+}
+
+.group-det-member-main small {
+  font-size: 13px;
+  color: #3b82f6;
+}
+
+.group-det-member-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.group-det-member-actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  background: #fdfaf3;
+  color: #7c5b1a;
+  border: 1px solid #c5a05966;
+}
+
+.group-det-owner-badge {
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(124, 58, 237, 0.12);
+  color: #7c3aed;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: lowercase;
+}
+
+.group-det-file-btn {
+  width: 100%;
+  background: transparent;
+  text-align: left;
+}
+
+/* ═══════════════════════════════════════════════════════
+   DARK MODE (Telegram Pro Blue + Gold Accents)
+═══════════════════════════════════════════════════════ */
+.Details.dark {
+  background: #0f172a; /* Deep pro slate blue */
+  color: #fff;
+  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+}
+
+/* Base Blocks */
+.Details.dark .det-hero,
+.Details.dark .det-info-block-main,
+.Details.dark .det-list,
+.Details.dark .det-section-header,
+.Details.dark .det-media-grid,
+.Details.dark .det-file-list,
+.Details.dark .det-empty {
+  background: #1e293b; /* Telegram block color */
+}
+
+/* Texts */
+.Details.dark .det-name,
+.Details.dark .det-info-value,
+.Details.dark .det-item-text,
+.Details.dark .det-section-header h3,
+.Details.dark .det-file-name,
+.Details.dark .det-action-circle span {
+  color: #f1f5f9;
+}
+
+.Details.dark .det-sub,
+.Details.dark .det-info-label,
+.Details.dark .det-item-subtext,
+.Details.dark .det-file-date,
+.Details.dark .det-badge {
+  color: #94a3b8;
+}
+
+.Details.dark .det-edit-hint {
+  color: #cbd5e1;
+}
+.Details.dark .det-back-btn {
+  color: #f1f5f9;
+}
+
+/* Item Hovers */
+.Details.dark .det-item:hover,
+.Details.dark .det-file-item:hover,
+.Details.dark .det-back-btn:hover {
+  background: #334155;
+}
+
+/* Avatar & Mute Badge */
+.Details.dark .det-avatar {
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+.Details.dark .det-mute-badge {
+  background: #475569;
+  border-color: #1e293b;
+}
+
+/* Borders */
+.Details.dark .det-section-header,
+.Details.dark .det-file-item {
+  border-bottom-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Edit Pseudo */
+.Details.dark .det-pseudo-edit input {
+  background: #0f172a;
+  border-color: #334155;
+  color: #fff;
+}
+.Details.dark .det-pseudo-edit button {
+  background: #0f172a;
+  color: #fff;
+}
+.Details.dark .det-pseudo-edit button.save-btn:hover {
+  background: #c5a059;
+  color: #fff;
+} /* Gold active */
+.Details.dark .det-pseudo-edit button.cancel-btn:hover {
+  background: #ef4444;
+  color: #fff;
+}
+
+/* Quick Actions (Gold accent) */
+.Details.dark .det-action-circle {
+  color: #c5a059;
+}
+.Details.dark .det-circle-icon {
+  background: #0f172a;
+  border-color: #334155;
+}
+.Details.dark .det-action-circle:hover .det-circle-icon {
+  background: #c5a059;
+  color: #fff;
+  border-color: #c5a059;
+}
+
+/* Icons Colors (Replacing dark blue with gold/lighter tones for visibility) */
+.Details.dark .det-item-icon-left {
+  color: #e2e8f0;
+}
+.Details.dark .det-item.danger .det-item-text,
+.Details.dark .det-item.danger .det-item-icon-left {
+  color: #ef4444; /* Keep danger red */
+}
+
+/* Toggle */
+.Details.dark .det-toggle {
+  background: #475569;
+}
+.Details.dark .det-toggle.on {
+  background: #c5a059; /* Gold toggle active */
+}
+.Details.dark .det-toggle-thumb {
+  background: #fff;
+}
+
+/* Files / Media */
+.Details.dark .det-file-icon {
+  background: #0f172a;
+  color: #c5a059;
+  border: 1px solid #334155;
+}
+.Details.dark .det-media-thumb {
+  background: #334155;
+}
+
+.Details.dark .group-det-edit-box {
+  background: #0f172a;
+  border-color: #334155;
+}
+
+.Details.dark .group-det-edit-head,
+.Details.dark .group-det-members-header,
+.Details.dark .group-det-member-main span {
+  color: #f1f5f9;
+}
+
+.Details.dark .group-det-edit-box input,
+.Details.dark .group-det-edit-box textarea {
+  background: #1e293b;
+  border-color: #334155;
+  color: #f1f5f9;
+}
+
+.Details.dark .group-det-inline-input {
+  background: #1e293b;
+  border-color: #334155;
+  color: #f1f5f9;
+}
+
+.Details.dark .group-det-edit-actions button {
+  background: #1e293b;
+  color: #f1f5f9;
+}
+
+.Details.dark .group-det-edit-actions button:last-child {
+  background: #c5a059;
+  color: #0f172a;
+}
+
+.Details.dark .group-det-member-main small {
+  color: #60a5fa;
+}
+
+.Details.dark .group-det-member-actions button {
+  background: rgba(197, 160, 89, 0.15);
+  color: #f8fafc;
+  border-color: rgba(197, 160, 89, 0.45);
+}
+
+.Details.dark .group-det-owner-badge {
+  background: rgba(124, 58, 237, 0.2);
+  color: #c4b5fd;
+}

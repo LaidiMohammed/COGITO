@@ -1,0 +1,725 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+/* ─── DESIGN TOKENS ─────────────────────────────── */
+:root {
+  --meet-navy: #002147;
+  --meet-navy-deep: #001530;
+  --meet-gold: #c5a059;
+  --meet-gold-hover: #b08d45;
+  --meet-surface: rgba(255, 255, 255, 0.82);
+  --meet-surface-2: rgba(255, 255, 255, 0.95);
+  --meet-border: rgba(0, 33, 71, 0.14);
+  --meet-border-gold: rgba(197, 160, 89, 0.35);
+  --meet-text: #001a38;
+  --meet-text-sec: #4a6080;
+  --meet-text-muted: #8a9db5;
+  --meet-shadow: 0 2px 16px rgba(0, 33, 71, 0.1);
+  --meet-shadow-lg: 0 8px 32px rgba(0, 33, 71, 0.18);
+  --meet-radius: 14px;
+  --meet-radius-sm: 9px;
+  --meet-transition: 0.22s ease;
+}
+
+/* ═══════════════════════════════════════════════════════
+   DARK MODE OVERRIDES (Telegram Pro Blue + Gold Accents)
+═══════════════════════════════════════════════════════ */
+.container.dark .meet-container,
+.container.dark .modal-overlay {
+  --meet-navy: #f1f5f9;
+  --meet-navy-deep: #fff;
+  --meet-surface: #1e293b;
+  --meet-surface-2: #0f172a;
+  --meet-border: rgba(255, 255, 255, 0.05);
+  --meet-border-gold: rgba(197, 160, 89, 0.4);
+  --meet-text: #f1f5f9;
+  --meet-text-sec: #94a3b8;
+  --meet-text-muted: #64748b;
+  --meet-shadow: 0 2px 16px rgba(0, 0, 0, 0.5);
+  --meet-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.8);
+}
+
+.container.dark .modal-header {
+  background: #1e293b;
+}
+
+.container.dark .view-toggle,
+.container.dark .sort-control {
+  background: #1e293b;
+}
+.container.dark .view-btn.active {
+  background: #0f172a;
+  color: #c5a059;
+}
+
+.container.dark .btn-schedule,
+.container.dark .btn-join,
+.container.dark .btn-submit {
+  background: #c5a059;
+  color: #1e293b;
+}
+.container.dark .btn-schedule:hover,
+.container.dark .btn-join:hover,
+.container.dark .btn-submit:hover:not(:disabled) {
+  background: #d4af37;
+  color: #1e293b;
+}
+
+/* ─── CONTAINER ─────────────────────────────────── */
+/* Transparent — shows global /backround.png from index.css */
+.meet-container {
+  font-family: "Inter", sans-serif;
+  min-height: 100vh;
+  padding: 32px 36px;
+  box-sizing: border-box;
+  color: var(--meet-text);
+  /* no background: inherit the COGITO watermark pattern */
+}
+
+/* ─── HEADER ────────────────────────────────────── */
+.meet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.meet-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.meet-header-icon {
+  color: var(--meet-gold);
+  flex-shrink: 0;
+}
+
+.meet-title {
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: var(--meet-navy);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.meet-subtitle {
+  font-size: 0.82rem;
+  color: var(--meet-text-sec);
+  margin: 3px 0 0;
+}
+
+.meet-header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* VIEW TOGGLE */
+.view-toggle {
+  display: flex;
+  background: var(--meet-surface);
+  border: 1px solid var(--meet-border);
+  border-radius: 30px;
+  overflow: hidden;
+  box-shadow: var(--meet-shadow);
+  backdrop-filter: blur(8px);
+}
+
+.view-btn {
+  background: none;
+  border: none;
+  padding: 8px 13px;
+  cursor: pointer;
+  color: var(--meet-text-muted);
+  display: flex;
+  align-items: center;
+  border-radius: 30px;
+  transition:
+    background var(--meet-transition),
+    color var(--meet-transition);
+}
+
+.view-btn:hover {
+  background: rgba(0, 33, 71, 0.06);
+  color: var(--meet-navy);
+}
+
+.view-btn.active {
+  background: var(--meet-navy);
+  color: var(--meet-gold);
+}
+
+/* SCHEDULE BUTTON */
+.btn-schedule {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--meet-navy);
+  color: var(--meet-gold);
+  border: 1.5px solid var(--meet-gold);
+  border-radius: 30px;
+  padding: 10px 20px;
+  font-family: "Inter", sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 3px 14px rgba(0, 33, 71, 0.22);
+  transition:
+    background var(--meet-transition),
+    color var(--meet-transition),
+    transform var(--meet-transition),
+    box-shadow var(--meet-transition);
+}
+
+.btn-schedule:hover {
+  background: var(--meet-gold);
+  color: var(--meet-navy);
+  transform: translateY(-1px);
+  box-shadow: 0 5px 20px rgba(197, 160, 89, 0.35);
+}
+
+.btn-schedule:active {
+  transform: translateY(0);
+}
+
+/* ─── CARDS GRID ────────────────────────────────── */
+.meetings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 20px;
+}
+
+.meetings-list {
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+/* ─── MEETING CARD ──────────────────────────────── */
+.meeting-card {
+  background: var(--meet-surface);
+  border: 1px solid var(--meet-border);
+  border-radius: var(--meet-radius);
+  padding: 20px 22px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  box-shadow: var(--meet-shadow);
+  backdrop-filter: blur(10px);
+  transition:
+    box-shadow var(--meet-transition),
+    transform var(--meet-transition),
+    border-color var(--meet-transition);
+  position: relative;
+  overflow: visible; /* allow delete btn to show at corner */
+}
+
+/* Gold left accent stripe */
+.meeting-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(180deg, var(--meet-gold), var(--meet-navy));
+  border-radius: var(--meet-radius) 0 0 var(--meet-radius);
+}
+
+.meeting-card:hover {
+  box-shadow: var(--meet-shadow-lg);
+  transform: translateY(-2px);
+  border-color: var(--meet-border-gold);
+}
+
+/* ── Avatar ── */
+.card-avatar-wrap {
+  flex-shrink: 0;
+}
+
+.card-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1rem;
+  border: 2.5px solid var(--meet-border-gold);
+}
+
+.card-avatar-initials {
+  background: linear-gradient(135deg, var(--meet-gold), var(--meet-navy));
+  color: #fff;
+  font-family: "Inter", sans-serif;
+}
+
+/* ── Card info ── */
+.card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--meet-text);
+  margin: 0 0 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-creator {
+  font-size: 0.78rem;
+  color: var(--meet-text-sec);
+  margin: 0 0 8px;
+}
+
+.card-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.card-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.78rem;
+  color: var(--meet-text-sec);
+}
+
+.card-meta-item svg {
+  color: var(--meet-gold);
+  flex-shrink: 0;
+}
+
+.card-duration-badge {
+  background: rgba(197, 160, 89, 0.12);
+  color: var(--meet-gold);
+  border: 1px solid var(--meet-border-gold);
+  border-radius: 20px;
+  padding: 2px 10px;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+/* ── Delete button (top-right corner) ── */
+.btn-delete {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #e53e3e;
+  color: #fff;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transform: scale(0.8);
+  transition:
+    opacity var(--meet-transition),
+    transform var(--meet-transition),
+    background var(--meet-transition);
+  z-index: 10;
+  padding: 0;
+  line-height: 1;
+}
+
+.meeting-card:hover .btn-delete {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.btn-delete:hover {
+  background: #c53030 !important;
+  transform: scale(1.12) !important;
+}
+
+/* ── Card actions ── */
+.card-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.btn-join {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--meet-navy);
+  color: var(--meet-gold);
+  text-decoration: none;
+  border-radius: 30px;
+  padding: 8px 16px;
+  font-family: "Inter", sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  border: 1px solid transparent;
+  transition:
+    background var(--meet-transition),
+    color var(--meet-transition),
+    border-color var(--meet-transition),
+    transform var(--meet-transition);
+  white-space: nowrap;
+}
+
+.btn-join:hover {
+  background: var(--meet-gold);
+  color: var(--meet-navy);
+  transform: translateY(-1px);
+}
+
+.btn-copy {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: transparent;
+  color: var(--meet-text-sec);
+  border: 1px solid var(--meet-border);
+  border-radius: 30px;
+  padding: 7px 14px;
+  font-family: "Inter", sans-serif;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--meet-transition);
+  white-space: nowrap;
+}
+.btn-copy:hover {
+  background: rgba(0, 33, 71, 0.05);
+  border-color: var(--meet-border-gold);
+  color: var(--meet-navy);
+}
+
+.btn-copy.copied {
+  background: rgba(197, 160, 89, 0.1);
+  border-color: var(--meet-border-gold);
+  color: var(--meet-gold);
+}
+
+/* ─── EMPTY STATE ───────────────────────────────── */
+.meet-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  text-align: center;
+}
+
+.meet-empty-icon {
+  color: var(--meet-gold);
+  opacity: 0.4;
+  margin-bottom: 16px;
+}
+
+.meet-empty h2 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--meet-navy);
+  margin: 0 0 8px;
+}
+
+.meet-empty p {
+  font-size: 0.88rem;
+  margin: 0;
+  color: var(--meet-text-sec);
+}
+
+/* ─── LOADING ───────────────────────────────────── */
+.meet-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  gap: 16px;
+  color: var(--meet-text-sec);
+  font-size: 0.9rem;
+}
+
+.spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid rgba(0, 33, 71, 0.12);
+  border-top-color: var(--meet-gold);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ─── MODAL ─────────────────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 15, 40, 0.55);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  animation: fadeIn 0.18s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-box {
+  background: var(--meet-surface-2);
+  border-radius: var(--meet-radius);
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 24px 64px rgba(0, 33, 71, 0.28);
+  animation: slideUp 0.22s ease;
+  overflow: hidden;
+  border: 1px solid var(--meet-border-gold);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 26px 20px;
+  border-bottom: 1px solid var(--meet-border-gold);
+  background: var(--meet-navy);
+}
+
+.modal-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--meet-gold);
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.modal-close {
+  background: rgba(197, 160, 89, 0.12);
+  border: 1px solid rgba(197, 160, 89, 0.25);
+  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--meet-gold);
+  transition: background var(--meet-transition);
+}
+
+.modal-close:hover {
+  background: rgba(197, 160, 89, 0.25);
+}
+
+/* FORM */
+.modal-form {
+  padding: 24px 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.form-group label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--meet-navy);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.form-group input {
+  font-family: "Inter", sans-serif;
+  font-size: 0.9rem;
+  color: var(--meet-text);
+  background: rgba(0, 33, 71, 0.03);
+  border: 1.5px solid var(--meet-border);
+  border-radius: var(--meet-radius-sm);
+  padding: 10px 14px;
+  outline: none;
+  transition:
+    border-color var(--meet-transition),
+    box-shadow var(--meet-transition);
+}
+
+.form-group input:focus {
+  border-color: var(--meet-gold);
+  box-shadow: 0 0 0 3px rgba(197, 160, 89, 0.15);
+  background: #fff;
+}
+
+.form-row {
+  display: flex;
+  gap: 14px;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 6px;
+  border-top: 1px solid var(--meet-border);
+}
+
+.btn-cancel {
+  background: transparent;
+  color: var(--meet-text-sec);
+  border: 1.5px solid var(--meet-border);
+  border-radius: var(--meet-radius-sm);
+  padding: 10px 20px;
+  font-family: "Inter", sans-serif;
+  font-size: 0.88rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--meet-transition);
+}
+.btn-cancel:hover {
+  border-color: var(--meet-border-gold);
+  color: var(--meet-navy);
+}
+
+.btn-submit {
+  background: var(--meet-navy);
+  color: var(--meet-gold);
+  border: 1.5px solid var(--meet-gold);
+  border-radius: var(--meet-radius-sm);
+  padding: 10px 24px;
+  font-family: "Inter", sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 3px 12px rgba(0, 33, 71, 0.18);
+  transition:
+    background var(--meet-transition),
+    color var(--meet-transition),
+    transform var(--meet-transition);
+}
+
+.btn-submit:hover:not(:disabled) {
+  background: var(--meet-gold);
+  color: var(--meet-navy);
+  transform: translateY(-1px);
+}
+
+.btn-submit:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Override global button:hover from Chat.css bleeding in */
+.meet-container button:hover {
+  background-color: unset;
+}
+.meet-container .btn-join:hover {
+  background: var(--meet-gold);
+}
+.meet-container .btn-schedule:hover {
+  background: var(--meet-gold);
+}
+.meet-container .view-btn.active:hover {
+  background: var(--meet-navy);
+}
+
+/* ─── SORT CONTROL ───────────────────────────────── */
+.sort-control {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--meet-surface);
+  border: 1px solid var(--meet-border);
+  border-radius: 30px;
+  padding: 7px 12px;
+  box-shadow: var(--meet-shadow);
+  backdrop-filter: blur(8px);
+}
+
+.sort-icon {
+  color: var(--meet-gold);
+  flex-shrink: 0;
+}
+
+.sort-select {
+  font-family: "Inter", sans-serif;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--meet-text);
+  background: transparent;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  appearance: auto;
+}
+
+/* ─── RESPONSIVE ─────────────────────────────────── */
+@media (max-width: 768px) {
+  .meet-container {
+    padding: 20px 16px;
+  }
+  .meetings-grid {
+    grid-template-columns: 1fr;
+  }
+  .meeting-card {
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+  .card-actions {
+    flex-direction: row;
+    width: 100%;
+  }
+  .btn-join,
+  .btn-copy {
+    flex: 1;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .meet-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .form-row {
+    flex-direction: column;
+  }
+}

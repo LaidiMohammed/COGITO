@@ -1,0 +1,1 @@
+#!/bin/sh&#10;echo "Run after gh auth login:"&#10;echo "git push origin blackboxai/pr-task-final"&#10;echo "gh pr create --title \"blackboxai/restore-pre-modify\" --base main --head blackboxai/pr-task-final"&#10;echo "Or web: https://github.com/ryad-fartas/COGITO-1.0/compare/main...blackboxai/pr-task-final"&#10;read -p "Press enter to exit"

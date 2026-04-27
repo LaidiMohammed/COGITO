@@ -1,0 +1,526 @@
+/* ===== OVERLAY ===== */
+.settings-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(4px);
+  z-index: 500;
+  display: flex;
+  justify-content: flex-end;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.settings-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* ===== PANEL ===== */
+.settings-panel {
+  width: 320px;
+  height: 100%;
+  background-color: var(--bg-panel);
+  border-left: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow-y: auto;
+}
+
+.settings-overlay.open .settings-panel {
+  transform: translateX(0);
+}
+
+/* ===== HEADER ===== */
+.settings-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.settings-header h2 {
+  font-size: 22px;
+  font-weight: 700;
+  background: linear-gradient(-45deg, #1e3a8a, #3b82f6, #60a5fa, #1e3a8a);
+  background-size: 300% 300%;
+  animation: wavyTextGradient 6s ease infinite;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+  letter-spacing: -0.5px;
+}
+
+@keyframes wavyTextGradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+  padding: 6px;
+  border-radius: 50%;
+  display: flex;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.close-btn:hover {
+  background-color: var(--hover-bg);
+  color: var(--text-primary);
+  transform: scale(1.1);
+}
+
+.close-btn:active {
+  transform: scale(0.9);
+}
+
+/* ===== PROFILE ===== */
+.settings-profile {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 20px;
+}
+
+.profile-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0f172a, #1e3a8a);
+  color: #fff;
+  font-size: 18px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.profile-info strong {
+  font-size: 16px;
+  color: var(--text-primary);
+}
+
+.profile-info span {
+  font-size: 13px;
+  color: #22c55e;
+}
+
+.edit-profile-btn {
+  background: none;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 5px 12px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.edit-profile-btn:hover {
+  background-color: var(--hover-bg);
+  color: var(--text-primary);
+  transform: translateY(-1px);
+}
+
+.edit-profile-btn:active {
+  transform: scale(0.95);
+}
+
+/* ===== DIVIDER ===== */
+.settings-divider {
+  height: 1px;
+  background-color: var(--border-color);
+  margin: 6px 16px;
+}
+
+/* ===== LIST ===== */
+.settings-list {
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+}
+
+/* ===== SECTION WRAPPER ===== */
+.settings-section {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* back button inside header */
+.back-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+  padding: 6px;
+  border-radius: 50%;
+  display: flex;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.back-btn:hover {
+  background-color: var(--hover-bg);
+  color: var(--text-primary);
+  transform: scale(1.1);
+}
+
+.back-btn:active {
+  transform: scale(0.9);
+}
+
+/* profile form inside section */
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  padding: 0 20px;
+  gap: 20px;
+}
+
+.profile-form .profile-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.profile-form label {
+  flex: 1 1 45%;
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.profile-form input[type="text"],
+.profile-form input[type="file"] {
+  margin-top: 6px;
+  padding: 10px 12px;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  background-color: var(--bg-panel);
+  color: var(--text-primary);
+  font-size: 14px;
+  transition: border-color 0.2s ease;
+}
+
+.profile-form input[type="text"]:focus {
+  outline: none;
+  border-color: var(--highlight-color);
+}
+
+.avatar-preview {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--hover-bg);
+  margin: 0 auto 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+  border: 2px solid var(--highlight-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.avatar-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-overlay {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: var(--highlight-color);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+
+.avatar-note {
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.profile-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.profile-buttons button {
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.profile-buttons button.primary {
+  background-color: var(--highlight-color);
+  color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.profile-buttons button.primary:hover {
+  background-color: #0056b3;
+  transform: translateY(-1px);
+}
+
+.profile-buttons button:active {
+  transform: scale(0.95);
+}
+
+.profile-buttons button:not(.primary) {
+  background: none;
+  color: var(--text-secondary);
+  border: 2px solid var(--border-color);
+}
+
+.profile-buttons button:not(.primary):hover {
+  background-color: var(--hover-bg);
+  color: var(--text-primary);
+}
+
+.help-content {
+  padding: 0 20px;
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.help-content a {
+  color: var(--highlight-color);
+  text-decoration: underline;
+}
+
+.settings-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.settings-item:hover {
+  background-color: var(--hover-bg);
+}
+
+.settings-item:active {
+  transform: scale(0.97);
+}
+
+.settings-item.danger {
+  color: #ef4444;
+}
+
+.settings-item.danger .settings-icon {
+  color: #ef4444;
+}
+
+.settings-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background-color: var(--hover-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--highlight-color);
+  flex-shrink: 0;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.settings-item:hover .settings-icon {
+  transform: scale(1.1);
+}
+
+.settings-item:active .settings-icon {
+  transform: scale(0.9);
+}
+
+.chevron {
+  margin-left: auto;
+  color: var(--text-secondary);
+}
+
+/* ===== TOGGLE SWITCH ===== */
+.toggle-track {
+  margin-left: auto;
+  width: 42px;
+  height: 24px;
+  border-radius: 12px;
+  background-color: var(--border-color);
+  position: relative;
+  transition:
+    background-color 0.3s ease,
+    transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
+}
+
+.toggle-track:active {
+  transform: scale(0.92);
+}
+
+.toggle-track.on {
+  background-color: var(--highlight-color);
+}
+
+.toggle-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  transition: transform 0.3s ease;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-track.on .toggle-thumb {
+  transform: translateX(18px);
+}
+
+/* ===== TELEGRAM STATUS TOGGLE ===== */
+.telegram-status-toggle {
+  display: flex;
+  position: relative;
+  background-color: var(--hover-bg);
+  border-radius: 12px;
+  padding: 4px;
+  margin-top: 4px;
+  cursor: pointer;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.telegram-status-toggle:active {
+  transform: scale(0.97);
+}
+
+.status-option {
+  flex: 1;
+  text-align: center;
+  padding: 8px 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  position: relative;
+  z-index: 2;
+  transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+}
+
+.status-option.active {
+  color: var(--highlight-color);
+}
+
+.status-slider {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 4px;
+  width: calc(50% - 4px);
+  background-color: var(--bg-panel);
+  border-radius: 8px;
+  z-index: 1;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+}
+
+.status-slider.right {
+  transform: translateX(100%);
+}
+
+.bg-thumbnail {
+  transition:
+    transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    border 0.2s ease;
+}
+
+.bg-thumbnail:active {
+  transform: scale(0.92);
+}
+
+@keyframes qrPopIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.9) translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   LIGHT & DARK MODE VARIABLES (Telegram Pro Blue + Gold)
+═══════════════════════════════════════════════════════ */
+
+/* Default / Light Mode */
+:root {
+  --bg-panel: #ffffff;
+  --border-color: #e5e7eb;
+  --text-primary: #1f2937;
+  --text-secondary: #6b7280;
+  --hover-bg: #f3f4f6;
+  --highlight-color: #002147;
+}
+
+/* Dark Mode Overrides */
+.container.dark {
+  --bg-panel: #1e293b;
+  --border-color: rgba(255, 255, 255, 0.05);
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --hover-bg: #334155;
+  --highlight-color: #c5a059;
+}

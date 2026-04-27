@@ -1,0 +1,58 @@
+.AddUser {
+  width: max-content;
+  height: max-content;
+  padding: 30px;
+  background-color: #002147ee;
+  border-radius: 10px;
+  /* ❌ supprime : position, top, bottom, left, right, margin: auto */
+}
+
+.AddUser form {
+  display: flex;
+  gap: 20px;
+}
+
+.AddUser form input {
+  padding: 20px;
+  border-radius: 8px;
+  border: none;
+  outline: none;
+}
+
+.AddUser button {
+  padding: 20px;
+  background-color: #c59f59b5;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.AddUser button:hover {
+  background-color: #002147;
+}
+
+.user button {
+  padding: 10px;
+}
+
+.user {
+  margin-top: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.user .detail {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  color: white;
+}
+
+.user .detail img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+}

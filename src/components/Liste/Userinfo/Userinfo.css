@@ -1,0 +1,65 @@
+.Userinfo {
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* USER */
+.Userinfo .user {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-top: 0;
+}
+
+.Userinfo .user img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* ICONS */
+.Userinfo .icons {
+  display: flex;
+  gap: 20px;
+}
+
+.Userinfo .icons img {
+  display: none;
+}
+
+.settings-shortcut {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(200, 163, 75, 0.1);
+  border-radius: 50%;
+  padding: 7px;
+  transition: background 0.18s;
+  cursor: pointer;
+  position: relative;
+}
+.settings-shortcut:hover {
+  background: rgba(200, 163, 75, 0.22);
+}
+.settings-shortcut svg {
+  color: #c5a059;
+}
+
+h2 {
+  color: #013167;
+}
+
+/* ═══════════════════════════════════════════════════════
+   DARK MODE OVERRIDES (Telegram Pro Blue + Gold Accents)
+═══════════════════════════════════════════════════════ */
+.container.dark .Userinfo h2 {
+  color: #f1f5f9;
+}
+
+/* If there are any lucide-react icons or svg strokes */
+.container.dark .Userinfo .icons svg {
+  color: #c5a059;
+}

@@ -1,0 +1,35 @@
+.group-item .texts-top span {
+  color: #001c30;
+}
+
+.group-avatar-fallback {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #002147, #0d4d8b);
+  color: #f8fafc;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.group-list-empty {
+  margin: 16px;
+  border: 1px dashed #c5a358;
+  border-radius: 14px;
+  padding: 14px;
+  color: #001c30;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.65);
+}
+
+.container.dark .group-list-empty {
+  background: #1e293b;
+  color: #f8fafc;
+  border-color: #c5a358;
+}
