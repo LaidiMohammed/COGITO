@@ -632,3 +632,71 @@ select:focus {
   background: #334155;
   color: #c5a059;
 }
+
+/* ─── GROUP CARD IMAGE ───────────────────────────── */
+.group-card-img-wrap {
+  width: 100%;
+  height: 130px;
+  margin: -20px -22px 16px;
+  width: calc(100% + 44px);
+  overflow: hidden;
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+
+.group-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.35s ease;
+}
+
+.group-card:hover .group-card-img {
+  transform: scale(1.04);
+}
+
+/* ─── GROUP IMAGE PICKER (modal) ──────────────────── */
+.group-img-picker {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+
+.group-img-label {
+  cursor: pointer;
+  display: block;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px dashed var(--border-gold);
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.group-img-label:hover {
+  border-color: var(--cogito-gold);
+  transform: scale(1.04);
+}
+
+.group-img-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.group-img-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background: rgba(0, 33, 71, 0.04);
+  color: var(--text-sec);
+  font-size: 11px;
+  font-weight: 600;
+  text-align: center;
+  border-radius: 50%;
+}
+

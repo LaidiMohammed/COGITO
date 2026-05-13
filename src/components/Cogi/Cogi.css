@@ -75,6 +75,36 @@
   align-self: flex-end;
 }
 
+.cogi-ai-avatar-img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  border-radius: 50%;
+  align-self: flex-end;
+  flex-shrink: 0;
+  animation: floatAvatar 3s ease-in-out infinite;
+}
+
+.cogi-thinking-favicon {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  border-radius: 50%;
+  align-self: flex-end;
+  flex-shrink: 0;
+  animation: pulseFavicon 1.5s ease-in-out infinite;
+}
+
+@keyframes floatAvatar {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+@keyframes pulseFavicon {
+  0%, 100% { transform: scale(1); filter: brightness(1); }
+  50% { transform: scale(1.1); filter: brightness(1.2) drop-shadow(0 0 4px rgba(197, 160, 89, 0.4)); }
+}
+
 /* ── Message row layout ──────────────────────────────── */
 .cogi-message-wrap {
   display: flex;
@@ -549,8 +579,9 @@
 
 .cogi-welcome-title {
   font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+  font-family: "Poppins", sans-serif;
   font-weight: 800;
-  color: #021c3a;
+  color: #002147;
   text-align: center;
   letter-spacing: -0.5px;
   line-height: 1.15;

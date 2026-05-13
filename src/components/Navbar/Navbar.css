@@ -71,6 +71,39 @@
   transform: scale(1.1) rotate(15deg);
 }
 
+/* RIGHT SECTION */
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* ADMIN BUTTON */
+.nav-admin-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: linear-gradient(135deg, rgba(197,160,89,0.18), rgba(197,160,89,0.08));
+  border: 1px solid rgba(197,160,89,0.45);
+  color: #c5a059;
+  padding: 7px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: "Poppins", sans-serif;
+  transition: all 0.2s;
+  letter-spacing: 0.3px;
+}
+.nav-admin-btn svg { stroke: #c5a059; }
+.nav-admin-btn:hover {
+  background: linear-gradient(135deg, rgba(197,160,89,0.35), rgba(197,160,89,0.15));
+  border-color: rgba(197,160,89,0.8);
+  box-shadow: 0 0 14px rgba(197,160,89,0.3);
+  transform: translateY(-1px);
+}
+
+
 /* ═══════════════════════════════════════════════════════
    DARK MODE OVERRIDES (Telegram Pro Blue + Gold Accents)
 ═══════════════════════════════════════════════════════ */

@@ -5,6 +5,7 @@ import Groups from "./components/Groups/Groups";
 import Meet from "./components/Meet/Meet";
 import Cours from "./components/Cours/Cours";
 import Cogi from "./components/Cogi/Cogi";
+import AdminPanel from "./components/Admin/AdminPanel";
 
 import ChatPage from "./pages/ChatPage";
 import DemoPage from "./pages/DemoPage";
@@ -29,6 +30,7 @@ const App = () => {
 
   const [page, setPage] = useState("chat");
   const [active, setActive] = useState("chat");
+  const [showAdmin, setShowAdmin] = useState(false);
 
   // Écouter le changement de hash (navigation vers/depuis #demo)
   const [demoMode, setDemoMode] = useState(isDemoMode());
@@ -58,28 +60,50 @@ const App = () => {
   }, [fetchUserInfo]);
 
   // ── Mode démo : affichage direct sans auth ──────────────────────────────
-  // @FIXME: Link to Firebase — supprimer ce bloc pour désactiver le mode démo.
   if (demoMode) {
     return <DemoPage />;
   }
 
+  // ── Compte banni ──────────────────────────────────────────────────────────
+  if (currentUser?.banned) {
+    return (
+      <div className="loading-video-overlay" style={{ flexDirection: "column", gap: 24 }}>
+        <div style={{
+          background: "rgba(239,68,68,0.12)",
+          border: "1px solid rgba(239,68,68,0.4)",
+          borderRadius: 16,
+          padding: "40px 60px",
+          textAlign: "center",
+          maxWidth: 460,
+        }}>
+          <div style={{ fontSize: 48, marginBottom: 16 }}>🚫</div>
+          <h2 style={{ color: "#ef4444", fontFamily: "Poppins", marginBottom: 8 }}>Compte suspendu</h2>
+          <p style={{ color: "#94a3b8", fontSize: 14 }}>Votre compte a été suspendu par un administrateur. Contactez le support pour plus d'informations.</p>
+          <button
+            onClick={() => auth.signOut()}
+            style={{
+              marginTop: 24, background: "rgba(239,68,68,0.2)", border: "1px solid rgba(239,68,68,0.4)",
+              color: "#ef4444", padding: "10px 28px", borderRadius: 10, cursor: "pointer", fontWeight: 600,
+            }}
+          >
+            Se déconnecter
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   if (isLoading)
     return (
-      <div className="loading">
-        Loading auth…{" "}
-        <a
-          href="#demo"
-          style={{
-            display: "block",
-            marginTop: 16,
-            fontSize: 14,
-            color: "#C5A059",
-            textDecoration: "underline",
-            cursor: "pointer",
-          }}
-        >
-          ▶ Voir la démo sans connexion
-        </a>
+      <div className="loading-video-overlay">
+        <video
+          src="/image/loading.mp4"
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="loading-video"
+        />
       </div>
     );
 
@@ -87,7 +111,11 @@ const App = () => {
     <div className={`container ${darkMode ? "dark" : ""}`}>
       {currentUser ? (
         <>
-          <Navbar setPage={changePage} active={active} />
+          <Navbar
+            setPage={changePage}
+            active={active}
+            onOpenAdmin={currentUser.role === "admin" ? () => setShowAdmin(true) : null}
+          />
 
           {page === "chat" && <ChatPage setPage={changePage} />}
           {page === "groups" && <Groups setPage={changePage} />}
@@ -104,6 +132,10 @@ const App = () => {
             setUser={setUser}
             onLogout={handleLogout}
           />
+
+          {showAdmin && currentUser.role === "admin" && (
+            <AdminPanel onClose={() => setShowAdmin(false)} />
+          )}
         </>
       ) : (
         <>

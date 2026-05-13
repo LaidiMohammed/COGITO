@@ -80,6 +80,7 @@ h6 {
   background-image: url("/backround.png");
   background-size: cover;
   background-position: center;
+  background-attachment: fixed;
   transition: background-color var(--transition-smooth);
 }
 
@@ -114,36 +115,26 @@ h6 {
   background: var(--cogito-gold);
 }
 
-/* LOADING OVERLAY */
-.loading {
-  padding: 40px 60px;
-  font-family: "Poppins", sans-serif;
-  font-size: 24px;
-  font-weight: 600;
-  color: var(--cogito-gold);
-  background: rgba(0, 33, 71, 0.85);
-  backdrop-filter: blur(10px);
-  border: 1px solid var(--cogito-gold);
-  border-radius: var(--radius-lg);
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-  margin: auto;
-  animation: pulse 2s infinite ease-in-out;
+/* LOADING VIDEO OVERLAY */
+.loading-video-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
 }
 
-@keyframes pulse {
-  0% {
-    transform: scale(0.98);
-    box-shadow: 0 0 0 0 rgba(197, 160, 89, 0.4);
-  }
-  70% {
-    transform: scale(1);
-    box-shadow: 0 0 0 15px rgba(197, 160, 89, 0);
-  }
-  100% {
-    transform: scale(0.98);
-    box-shadow: 0 0 0 0 rgba(197, 160, 89, 0);
-  }
+.loading-video {
+  width: 480px;
+  height: 480px;
+  object-fit: contain;
+  border-radius: 20px;
 }
+
 
 /* UTILITY CLASSES */
 .glass-panel {

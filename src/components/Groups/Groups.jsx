@@ -11,7 +11,9 @@ import {
   updateDoc,
   arrayUnion,
   arrayRemove,
+  getDocs,
 } from "firebase/firestore";
+import { upload } from "../../lib/upload";
 import {
   Plus,
   Crown,
@@ -71,6 +73,15 @@ const Groups = ({ setPage }) => {
     members: "",
     settings: { ...defaultSettings },
   });
+  const [groupImgFile, setGroupImgFile] = useState(null);
+  const [groupImgPreview, setGroupImgPreview] = useState("");
+
+  const handleGroupImgChange = (e) => {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    setGroupImgFile(f);
+    setGroupImgPreview(URL.createObjectURL(f));
+  };
 
   // Seed local pinnedGroups state from user doc
   useEffect(() => {
@@ -220,7 +231,6 @@ const Groups = ({ setPage }) => {
     if (!currentUser || !form.name.trim()) return;
     setCreating(true);
 
-    // Sanitize member IDs
     const memberIds = form.members
       .split(",")
       .map((m) => m.trim())
@@ -228,12 +238,25 @@ const Groups = ({ setPage }) => {
     if (!memberIds.includes(currentUser.id)) memberIds.push(currentUser.id);
 
     try {
+      // Upload group image if provided
+      let groupImgUrl = "";
+      if (groupImgFile) {
+        groupImgUrl = await upload(groupImgFile, "group-avatars", {
+          allowDataUrlFallback: true,
+          maxWidth: 512,
+          maxHeight: 512,
+          quality: 0.8,
+          maxLength: 250000,
+        });
+      }
+
       await addDoc(collection(db, "groups"), {
         groupName: form.name.trim(),
         description: form.description.trim(),
         adminId: currentUser.id,
         members: memberIds,
         settings: form.settings,
+        groupImg: groupImgUrl,
         createdAt: serverTimestamp(),
       });
       setOpenCreate(false);
@@ -243,6 +266,8 @@ const Groups = ({ setPage }) => {
         members: "",
         settings: { ...defaultSettings },
       });
+      setGroupImgFile(null);
+      setGroupImgPreview("");
     } catch (err) {
     } finally {
       setCreating(false);
@@ -316,6 +341,12 @@ const Groups = ({ setPage }) => {
               className={`group-card ${isPinned ? "pinned" : ""}`}
               onContextMenu={(e) => handleContextMenu(e, group)}
             >
+              {/* Group image banner */}
+              {group.groupImg && (
+                <div className="group-card-img-wrap">
+                  <img src={group.groupImg} alt={group.groupName} className="group-card-img" />
+                </div>
+              )}
               <div className="card-top">
                 <div className="title-area">
                   <h3>
@@ -463,6 +494,27 @@ const Groups = ({ setPage }) => {
             </div>
 
             <form onSubmit={handleCreateGroup} className="modal-form">
+              {/* Group image picker */}
+              <div className="group-img-picker">
+                <label htmlFor="group-img-input" className="group-img-label">
+                  {groupImgPreview ? (
+                    <img src={groupImgPreview} alt="Aperçu" className="group-img-preview" />
+                  ) : (
+                    <div className="group-img-placeholder">
+                      <span style={{ fontSize: 32 }}>📷</span>
+                      <span>Photo du groupe</span>
+                    </div>
+                  )}
+                </label>
+                <input
+                  id="group-img-input"
+                  type="file"
+                  accept="image/*"
+                  style={{ display: "none" }}
+                  onChange={handleGroupImgChange}
+                />
+              </div>
+
               <div className="form-grid">
                 <div className="form-column">
                   <div className="input-group">

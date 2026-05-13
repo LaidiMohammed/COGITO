@@ -79,14 +79,16 @@ const SUGGESTIONS = [
   },
 ];
 
-/* ─── Typing indicator (Chat-style gold dots) ──────────────── */
+/* ─── Typing indicator with favicon ────────────────────── */
 const TypingBubble = () => (
   <div className="cogi-typing-bubble">
+    <img src="/image/favicon.png" alt="Cogi" className="cogi-thinking-favicon" />
     <span className="cogi-dot" style={{ animationDelay: "0s" }} />
     <span className="cogi-dot" style={{ animationDelay: "0.18s" }} />
     <span className="cogi-dot" style={{ animationDelay: "0.36s" }} />
   </div>
 );
+
 
 /* ─── Markdown renderer ────────────────────────────────────── */
 const RenderMarkdown = ({ text }) => {
@@ -410,7 +412,7 @@ const Cogi = () => {
     setAttachOpen(false);
 
     if (trimmed.length > 50) {
-      setMessages(p => [...p, { role: "assistant", content: "🔍 Analyse intelligente en cours...", isInfo: true }]);
+      setMessages(p => [...p, { role: "assistant", content: "Analyse intelligente en cours...", isInfo: true }]);
     }
 
     try {
@@ -470,8 +472,14 @@ const Cogi = () => {
           if (res.ok) {
             const data = await res.json();
             reply = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+          } else {
+            const errorData = await res.json();
+            throw new Error(`Erreur API Gemini (${res.status}): ${errorData?.error?.message || "Vérifiez la clé"}`);
           }
-        } catch (e) { console.warn("Gemini fallback failed."); }
+        } catch (e) { 
+          console.warn("Gemini error:", e);
+          throw e;
+        }
       }
 
       if (!reply) throw new Error("Toutes les connexions IA ont échoué. Vérifiez vos clés API dans le fichier .env");
@@ -601,7 +609,7 @@ const Cogi = () => {
     if (msg.isInfo) {
       return (
         <div key={i} className="cogi-message-wrap cogi-msg-ai">
-          <div className="cogi-ai-avatar">✦</div>
+          <img src="/image/favicon.png" alt="Cogi" className="cogi-ai-avatar-img" />
           <div className="chat-bubble cogi-ai-bubble cogi-bubble-info"><p>{msg.content}</p></div>
         </div>
       );
@@ -609,7 +617,7 @@ const Cogi = () => {
     if (msg.isError) {
       return (
         <div key={i} className="cogi-message-wrap cogi-msg-ai">
-          <div className="cogi-ai-avatar">✦</div>
+          <img src="/image/favicon.png" alt="Cogi" className="cogi-ai-avatar-img" />
           <div className="chat-bubble cogi-ai-bubble cogi-bubble-error"><p>{msg.content}</p></div>
         </div>
       );
@@ -621,7 +629,7 @@ const Cogi = () => {
     if (p.type === "doc") {
       return (
         <div key={i} className="cogi-message-wrap cogi-msg-ai">
-          <div className="cogi-ai-avatar">✦</div>
+          <img src="/image/favicon.png" alt="Cogi" className="cogi-ai-avatar-img" />
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {p.prefix && (
               <div className="chat-bubble cogi-ai-bubble">
@@ -637,7 +645,7 @@ const Cogi = () => {
     if (p.type === "img") {
       return (
         <div key={i} className="cogi-message-wrap cogi-msg-ai">
-          <div className="cogi-ai-avatar">✦</div>
+          <img src="/image/favicon.png" alt="Cogi" className="cogi-ai-avatar-img" />
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {p.prefix && (
               <div className="chat-bubble cogi-ai-bubble">
@@ -654,7 +662,7 @@ const Cogi = () => {
     // plain text
     return (
       <div key={i} className="cogi-message-wrap cogi-msg-ai" style={{ animationDelay: `${i * 0.02}s` }}>
-        <div className="cogi-ai-avatar">✦</div>
+        <img src="/image/favicon.png" alt="Cogi" className="cogi-ai-avatar-img" />
         <div className="chat-bubble cogi-ai-bubble">
           <RenderMarkdown text={p.content} />
           <span className="chat-msg-time">{new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}</span>
@@ -707,7 +715,7 @@ const Cogi = () => {
         {messages.length === 0 && !isLoading && (
           <div className="cogi-welcome">
             <h2 className="cogi-welcome-title">
-              welcome to <span className="cogi-brand-script">COGITO</span> IA
+              Bienvenue sur <span className="cogi-brand-script">COGI</span> IA
             </h2>
             <p className="cogi-welcome-sub">Un assistant universel — éducation, sport, culture, informatique&nbsp;…</p>
             <div className="cogi-suggestions">
@@ -737,10 +745,10 @@ const Cogi = () => {
         {/* Messages */}
         {messages.map(renderMsg)}
 
-        {/* Typing */}
+        {/* Thinking indicator */}
         {isLoading && (
           <div className="cogi-message-wrap cogi-msg-ai">
-            <div className="cogi-ai-avatar">✦</div>
+            <img src="/image/favicon.png" alt="Cogi" className="cogi-ai-avatar-img" />
             <TypingBubble />
           </div>
         )}

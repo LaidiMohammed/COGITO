@@ -33,9 +33,7 @@ const Welcome = ({ setPage }) => {
           </li>
         </ul>
 
-        <p className="welcome-note">
-          🔒 End-to-end encrypted - Your conversations are private and secure
-        </p>
+       
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import "./Chat.css";
 import EmojiPicker from "emoji-picker-react";
 import { useChatStore } from "../../lib/chatStore";
@@ -384,6 +384,13 @@ const Chat = () => {
   // Advanced Features State
   const [showStickerPicker, setShowStickerPicker] = useState(false);
   const [callSession, setCallSession] = useState(null);
+
+  // Voice recording state
+  const [isRecording, setIsRecording] = useState(false);
+  const [recordSeconds, setRecordSeconds] = useState(0);
+  const mediaRecorderRef = useRef(null);
+  const audioChunksRef = useRef([]);
+  const recordTimerRef = useRef(null);
 
   // Poll State
   const [showPollModal, setShowPollModal] = useState(false);
@@ -830,7 +837,8 @@ const Chat = () => {
   };
 
   const handleCall = async (type) => {
-    if (!canSendGroupMessage) {
+    // Allow calls in private chats freely; only restrict in groups if admin-only post
+    if (isGroupChat && !canSendGroupMessage) {
       toast.warn("Seul l'administrateur peut lancer un appel dans ce groupe");
       return;
     }
@@ -848,6 +856,56 @@ const Chat = () => {
       }),
     });
     setCallSession(roomId);
+  };
+
+  /* ── Voice recording ── */
+  const startRecording = useCallback(async () => {
+    if (isRecording || isInteractionBlocked || !canSendGroupMessage) return;
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mimeType = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
+        ? "audio/webm;codecs=opus"
+        : "audio/ogg;codecs=opus";
+      const recorder = new MediaRecorder(stream, { mimeType });
+      audioChunksRef.current = [];
+      recorder.ondataavailable = (e) => {
+        if (e.data.size > 0) audioChunksRef.current.push(e.data);
+      };
+      recorder.onstop = async () => {
+        stream.getTracks().forEach((t) => t.stop());
+        const blob = new Blob(audioChunksRef.current, { type: mimeType });
+        const ext = mimeType.includes("webm") ? "webm" : "ogg";
+        const audioFile = new File([blob], `vocal-${Date.now()}.${ext}`, { type: mimeType });
+        const fileData = { data: audioFile, url: URL.createObjectURL(audioFile), type: "audio" };
+        fileRef.current = fileData;
+        setFile(fileData);
+        await handleSendWithFile(fileData);
+        fileRef.current = null;
+        setFile({ data: null, url: "", type: "" });
+      };
+      recorder.start();
+      mediaRecorderRef.current = recorder;
+      setIsRecording(true);
+      setRecordSeconds(0);
+      recordTimerRef.current = setInterval(() => setRecordSeconds((s) => s + 1), 1000);
+    } catch {
+      toast.error("Accès au microphone refusé");
+    }
+  }, [isRecording, isInteractionBlocked, canSendGroupMessage]);
+
+  const stopRecording = useCallback(() => {
+    if (!isRecording || !mediaRecorderRef.current) return;
+    clearInterval(recordTimerRef.current);
+    mediaRecorderRef.current.stop();
+    mediaRecorderRef.current = null;
+    setIsRecording(false);
+    setRecordSeconds(0);
+  }, [isRecording]);
+
+  const formatRecordTime = (sec) => {
+    const m = Math.floor(sec / 60).toString().padStart(2, "0");
+    const s = (sec % 60).toString().padStart(2, "0");
+    return `${m}:${s}`;
   };
 
   const handleReplyAction = (message) => {
@@ -1777,22 +1835,28 @@ const Chat = () => {
               disabled={!canSendGroupMessage || !canSendMedia}
             />
 
-            {/* Audio / Mic */}
-            <label
-              className="icon-btn"
-              htmlFor="chat-audio-input"
-              title="Message vocal"
-            >
-              <IconMic />
-            </label>
-            <input
-              id="chat-audio-input"
-              type="file"
-              accept="audio/*"
-              style={{ display: "none" }}
-              onChange={(e) => handleFile(e, "audio")}
-              disabled={isInteractionBlocked || !canSendGroupMessage}
-            />
+            {/* Audio / Mic — enregistrement vocal */}
+            {isRecording ? (
+              <button
+                className="icon-btn mic-recording"
+                onClick={stopRecording}
+                title="Arrêter l'enregistrement"
+                type="button"
+              >
+                <span className="rec-dot" />
+                <span className="rec-timer">{formatRecordTime(recordSeconds)}</span>
+              </button>
+            ) : (
+              <button
+                className="icon-btn"
+                onClick={startRecording}
+                disabled={isInteractionBlocked || !canSendGroupMessage || isSending}
+                title="Message vocal"
+                type="button"
+              >
+                <IconMic />
+              </button>
+            )}
 
             {/* Plus / Attach */}
             <div className="attach-wrap" ref={attachRef}>

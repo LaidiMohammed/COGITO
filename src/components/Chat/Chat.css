@@ -1398,3 +1398,51 @@
     padding: 12px;
   }
 }
+
+/* ═══ VOICE RECORDING BUTTON ════════════════════════════ */
+.mic-recording {
+  background: rgba(239, 68, 68, 0.15) !important;
+  border: 2px solid rgba(239, 68, 68, 0.6) !important;
+  border-radius: 22px !important;
+  width: auto !important;
+  padding: 0 14px !important;
+  gap: 8px;
+  display: flex;
+  align-items: center;
+  color: #ef4444 !important;
+  animation: micPulse 1.2s ease-in-out infinite;
+  min-width: 80px;
+}
+
+.mic-recording:hover {
+  background: rgba(239, 68, 68, 0.25) !important;
+  transform: scale(1.03) !important;
+}
+
+@keyframes micPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+  50%        { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+}
+
+.rec-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ef4444;
+  flex-shrink: 0;
+  animation: blinkDot 1s step-start infinite;
+}
+
+@keyframes blinkDot {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+.rec-timer {
+  font-size: 13px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: #ef4444;
+  letter-spacing: 0.5px;
+}
+
