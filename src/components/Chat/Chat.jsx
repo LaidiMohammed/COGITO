@@ -893,9 +893,22 @@ const Chat = () => {
     }
   }, [isRecording, isInteractionBlocked, canSendGroupMessage]);
 
-  const stopRecording = useCallback(() => {
+  const sendRecording = useCallback(() => {
     if (!isRecording || !mediaRecorderRef.current) return;
     clearInterval(recordTimerRef.current);
+    mediaRecorderRef.current.stop();
+    mediaRecorderRef.current = null;
+    setIsRecording(false);
+    setRecordSeconds(0);
+  }, [isRecording]);
+
+  const cancelRecording = useCallback(() => {
+    if (!isRecording || !mediaRecorderRef.current) return;
+    clearInterval(recordTimerRef.current);
+    const stream = mediaRecorderRef.current.stream;
+    mediaRecorderRef.current.onstop = () => {
+      if (stream) stream.getTracks().forEach((t) => t.stop());
+    };
     mediaRecorderRef.current.stop();
     mediaRecorderRef.current = null;
     setIsRecording(false);
@@ -1836,17 +1849,7 @@ const Chat = () => {
             />
 
             {/* Audio / Mic — enregistrement vocal */}
-            {isRecording ? (
-              <button
-                className="icon-btn mic-recording"
-                onClick={stopRecording}
-                title="Arrêter l'enregistrement"
-                type="button"
-              >
-                <span className="rec-dot" />
-                <span className="rec-timer">{formatRecordTime(recordSeconds)}</span>
-              </button>
-            ) : (
+            {!isRecording && (
               <button
                 className="icon-btn"
                 onClick={startRecording}
@@ -1964,68 +1967,97 @@ const Chat = () => {
 
           {/* Right actions */}
           <div className="chat-inner-actions">
-            {/* Emoji */}
-            <div className="emoji-wrap">
-              <button
-                className={`icon-btn emoji-btn ${open ? "active" : ""}`}
-                onClick={() => {
-                  setOpen((p) => !p);
-                  setAttachOpen(false);
-                }}
-                disabled={isInteractionBlocked || isSending}
-                title="Emoji"
-                type="button"
-              >
-                <EmojiSVG active={open} />
-              </button>
-              {open && (
-                <div className="emoji-picker-pos">
-                  <EmojiPicker
-                    onEmojiClick={(e) => {
-                      handleEmoji(e);
-                      setOpen(false);
+            {!isRecording ? (
+              <>
+                {/* Emoji */}
+                <div className="emoji-wrap">
+                  <button
+                    className={`icon-btn emoji-btn ${open ? "active" : ""}`}
+                    onClick={() => {
+                      setOpen((p) => !p);
+                      setAttachOpen(false);
                     }}
-                    lazyLoadEmojis={true}
-                    searchPlaceholder="Rechercher un emoji…"
-                    skinTonesDisabled
-                  />
-                </div>
-              )}
-              {showStickerPicker && (
-                <div className="emoji-picker-pos sticker-picker-pos">
-                  <div className="sticker-grid">
-                    {STICKERS.map((s, idx) => (
-                      <img
-                        key={idx}
-                        src={s}
-                        alt={`Sticker ${idx}`}
-                        onClick={() => handleStickerSend(s)}
-                        className="sticker-thumb"
+                    disabled={isInteractionBlocked || isSending}
+                    title="Emoji"
+                    type="button"
+                  >
+                    <EmojiSVG active={open} />
+                  </button>
+                  {open && (
+                    <div className="emoji-picker-pos">
+                      <EmojiPicker
+                        onEmojiClick={(e) => {
+                          handleEmoji(e);
+                          setOpen(false);
+                        }}
+                        lazyLoadEmojis={true}
+                        searchPlaceholder="Rechercher un emoji…"
+                        skinTonesDisabled
                       />
-                    ))}
-                  </div>
+                    </div>
+                  )}
+                  {showStickerPicker && (
+                    <div className="emoji-picker-pos sticker-picker-pos">
+                      <div className="sticker-grid">
+                        {STICKERS.map((s, idx) => (
+                          <img
+                            key={idx}
+                            src={s}
+                            alt={`Sticker ${idx}`}
+                            onClick={() => handleStickerSend(s)}
+                            className="sticker-thumb"
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
 
-            {/* Send */}
-            <button
-              className={`send-btn ${isSending ? "sending" : ""}`}
-              onClick={handleSend}
-              disabled={
-                isInteractionBlocked ||
-                (text.trim() === "" && !file.data) ||
-                isSending
-              }
-              title="Envoyer"
-              type="button"
-            >
-              <div className={`send-icon-container ${isSending ? "fly" : ""}`}>
-                <SendSVG />
-              </div>
-            </button>
+                {/* Send */}
+                <button
+                  className={`send-btn ${isSending ? "sending" : ""}`}
+                  onClick={handleSend}
+                  disabled={
+                    isInteractionBlocked ||
+                    (text.trim() === "" && !file.data) ||
+                    isSending
+                  }
+                  title="Envoyer"
+                  type="button"
+                >
+                  <div className={`send-icon-container ${isSending ? "fly" : ""}`}>
+                    <SendSVG />
+                  </div>
+                </button>
+              </>
+            ) : null}
           </div>
         </div>
+
+        {/* Dedicated Recording UI Overlay */}
+        {isRecording && (
+          <div className="chat-recording-overlay" style={{
+            position: "absolute", inset: 0, background: "rgba(255,255,255,0.95)",
+            backdropFilter: "blur(10px)", display: "flex", alignItems: "center",
+            justifyContent: "space-between", padding: "0 20px", borderRadius: 28, zIndex: 10
+          }}>
+            <button className="icon-btn" onClick={cancelRecording} title="Annuler et supprimer" style={{ color: "#ef4444", background: "rgba(239,68,68,0.1)" }}>
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="3 6 5 6 21 6"/>
+                <path d="M19 6l-2 14H7L5 6"/>
+                <path d="M10 11v6"/><path d="M14 11v6"/>
+                <path d="M9 6V4h6v2"/>
+              </svg>
+            </button>
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <span className="rec-dot" style={{ width: 10, height: 10, borderRadius: "50%", background: "#ef4444", animation: "pulse 1.5s infinite" }} />
+              <span style={{ fontWeight: 600, color: "#ef4444", fontVariantNumeric: "tabular-nums" }}>{formatRecordTime(recordSeconds)}</span>
+            </div>
+            <button className="send-btn" onClick={sendRecording} title="Envoyer le vocal">
+              <SendSVG />
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

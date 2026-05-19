@@ -1,251 +1,372 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {
-  collection,
-  onSnapshot,
-  doc,
-  updateDoc,
-  deleteDoc,
-  query,
-  orderBy,
+  collection, onSnapshot, doc, updateDoc, deleteDoc, query, orderBy, getDoc,
 } from "firebase/firestore";
 import { db } from "../../lib/firebase";
 import { useUserStore } from "../../lib/userStore";
+import {
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  PieChart, Pie, Cell, Legend,
+} from "recharts";
 import "./AdminPanel.css";
 
-const ShieldIcon = () => (
-  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
-);
-const TrashIcon = () => (
-  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14H6L5 6" /><path d="M10 11v6" /><path d="M14 11v6" /><path d="M9 6V4h6v2" /></svg>
-);
-const BanIcon = () => (
-  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="4.93" y1="4.93" x2="19.07" y2="19.07" /></svg>
-);
-const CrownIcon = () => (
-  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 20h20" /><path d="M5 20V10l7-7 7 7v10" /><path d="M12 3v7" /></svg>
-);
-const DashboardIcon = () => (
-  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
-);
-const UsersIcon = () => (
-  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-);
-const FolderIcon = () => (
-  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-);
-const CalendarIcon = () => (
-  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-);
-const SettingsIcon = () => (
-  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+/* ── Icons ─────────────────────────────────────────────── */
+const I = (d, vb = "0 0 24 24") => (
+  <svg viewBox={vb} width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d={d} />
+  </svg>
 );
 
+const CHART_COLORS = ["#C5A059", "#3b82f6", "#10b981", "#8b5cf6", "#ef4444", "#f59e0b", "#06b6d4"];
+
+/* ── Time-series helpers ──────────────────────────────── */
+const bucketByDay = (items, dateField = "createdAt", days = 30) => {
+  const now = Date.now();
+  const map = {};
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date(now - i * 86400000);
+    const key = `${d.getDate()}/${d.getMonth() + 1}`;
+    map[key] = 0;
+  }
+  items.forEach((item) => {
+    const ts = item[dateField];
+    if (!ts) return;
+    const d = ts.toDate ? ts.toDate() : new Date(ts.seconds ? ts.seconds * 1000 : ts);
+    const key = `${d.getDate()}/${d.getMonth() + 1}`;
+    if (key in map) map[key]++;
+  });
+  return Object.entries(map).map(([date, count]) => ({ date, count }));
+};
+
+const bucketByMonth = (items, dateField = "createdAt") => {
+  const map = {};
+  const months = ["Jan","Fév","Mar","Avr","Mai","Jun","Jul","Aoû","Sep","Oct","Nov","Déc"];
+  for (let i = 0; i < 12; i++) map[months[i]] = 0;
+  items.forEach((item) => {
+    const ts = item[dateField];
+    if (!ts) return;
+    const d = ts.toDate ? ts.toDate() : new Date(ts.seconds ? ts.seconds * 1000 : ts);
+    map[months[d.getMonth()]]++;
+  });
+  return Object.entries(map).map(([date, count]) => ({ date, count }));
+};
+
+/* ── Custom Tooltip ───────────────────────────────────── */
+const CustomTooltip = ({ active, payload, label }) => {
+  if (!active || !payload?.length) return null;
+  return (
+    <div className="ap-tooltip">
+      <p className="ap-tooltip-label">{label}</p>
+      <p className="ap-tooltip-value">{payload[0].value}</p>
+    </div>
+  );
+};
+
+/* ══════════════════════════════════════════════════════ */
 const AdminPanel = ({ onClose }) => {
   const { currentUser } = useUserStore();
-  const [activeTab, setActiveTab] = useState("dashboard");
+  const [tab, setTab] = useState("dashboard");
   const [users, setUsers] = useState([]);
   const [groups, setGroups] = useState([]);
   const [meetings, setMeetings] = useState([]);
   const [searchUser, setSearchUser] = useState("");
   const [searchGroup, setSearchGroup] = useState("");
-  const [selectedGroupMsgs, setSelectedGroupMsgs] = useState(null);
+  const [timeScale, setTimeScale] = useState("day"); // day | month
+  const [selectedGroup, setSelectedGroup] = useState(null);
 
   useEffect(() => {
-    const unsub = onSnapshot(collection(db, "users"), (snap) =>
-      setUsers(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
+    const unsub = onSnapshot(collection(db, "users"), (s) =>
+      setUsers(s.docs.map((d) => ({ id: d.id, ...d.data() })))
     );
-    return () => unsub();
+    return unsub;
   }, []);
 
   useEffect(() => {
-    const unsub = onSnapshot(collection(db, "groups"), (snap) =>
-      setGroups(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
+    const unsub = onSnapshot(collection(db, "groups"), (s) =>
+      setGroups(s.docs.map((d) => ({ id: d.id, ...d.data() })))
     );
-    return () => unsub();
+    return unsub;
   }, []);
 
   useEffect(() => {
     const q = query(collection(db, "meetings"), orderBy("date", "desc"));
-    const unsub = onSnapshot(q, (snap) =>
-      setMeetings(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
+    const unsub = onSnapshot(q, (s) =>
+      setMeetings(s.docs.map((d) => ({ id: d.id, ...d.data() })))
     );
-    return () => unsub();
+    return unsub;
   }, []);
 
-  const handleBanUser = async (user) => {
-    if (user.id === currentUser?.id) return alert("Vous ne pouvez pas vous bannir vous-même.");
-    const isBanned = Boolean(user.banned);
-    const label = isBanned ? "débannir" : "bannir";
-    if (!window.confirm(`Voulez-vous ${label} ${user.username || user.email} ?`)) return;
-    await updateDoc(doc(db, "users", user.id), { banned: !isBanned });
+  /* ── Analytics data ─────────────────────────────────── */
+  const registrationData = useMemo(() =>
+    timeScale === "day" ? bucketByDay(users) : bucketByMonth(users),
+    [users, timeScale]
+  );
+
+  const univDistribution = useMemo(() => {
+    const map = {};
+    users.forEach((u) => {
+      const k = u.academicInfo?.universite || "Non renseigné";
+      map[k] = (map[k] || 0) + 1;
+    });
+    return Object.entries(map)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 6)
+      .map(([name, value]) => ({ name: name.replace("Université ", "U. "), value }));
+  }, [users]);
+
+  const groupActivity = useMemo(() => {
+    const active = groups.filter((g) => g.members?.length > 1).length;
+    return [
+      { name: "Actifs", value: active },
+      { name: "Inactifs", value: groups.length - active },
+    ];
+  }, [groups]);
+
+  /* ── User actions ───────────────────────────────────── */
+  const banUser = async (u) => {
+    if (u.id === currentUser?.id) return;
+    if (!window.confirm(`${u.banned ? "Débannir" : "Bannir"} ${u.username || u.email} ?`)) return;
+    await updateDoc(doc(db, "users", u.id), { banned: !u.banned });
   };
 
-  const handlePromoteAdmin = async (user) => {
-    if (user.id === currentUser?.id) return;
-    const isAdmin = user.role === "admin";
-    const label = isAdmin ? "révoquer les droits admin de" : "promouvoir admin";
-    if (!window.confirm(`Voulez-vous ${label} ${user.username || user.email} ?`)) return;
-    await updateDoc(doc(db, "users", user.id), { role: isAdmin ? "user" : "admin" });
+  const promoteUser = async (u) => {
+    if (u.id === currentUser?.id) return;
+    const isAdmin = u.role === "admin";
+    if (!window.confirm(`${isAdmin ? "Rétrograder" : "Promouvoir admin"} ${u.username} ?`)) return;
+    await updateDoc(doc(db, "users", u.id), { role: isAdmin ? "user" : "admin" });
   };
 
-  const handleDeleteGroup = async (group) => {
-    if (!window.confirm(`Supprimer définitivement le groupe "${group.groupName}" ?`)) return;
-    await deleteDoc(doc(db, "groups", group.id));
+  const deleteGroup = async (g) => {
+    if (!window.confirm(`Supprimer "${g.groupName}" ?`)) return;
+    await deleteDoc(doc(db, "groups", g.id));
   };
 
-  const handleDeleteMeet = async (meet) => {
-    if (!window.confirm(`Supprimer la réunion "${meet.title}" ?`)) return;
-    await deleteDoc(doc(db, "meetings", meet.id));
+  const deleteMeet = async (m) => {
+    if (!window.confirm(`Supprimer "${m.title}" ?`)) return;
+    await deleteDoc(doc(db, "meetings", m.id));
   };
 
   const filteredUsers = users.filter((u) =>
     (u.username || u.email || "").toLowerCase().includes(searchUser.toLowerCase())
   );
-
   const filteredGroups = groups.filter((g) =>
     (g.groupName || "").toLowerCase().includes(searchGroup.toLowerCase())
   );
+  const activeUsers = users.filter((u) => !u.banned).length;
+  const bannedUsers = users.filter((u) => u.banned).length;
 
-  const activeUsersCount = users.filter(u => !u.banned).length;
-  const bannedUsersCount = users.filter(u => u.banned).length;
+  /* ── Nav items ──────────────────────────────────────── */
+  const navItems = [
+    { id: "dashboard", label: "Vue d'ensemble" },
+    { id: "analytics", label: "Analytics" },
+    { id: "users", label: "Utilisateurs" },
+    { id: "groups", label: "Groupes" },
+    { id: "meets", label: "Réunions" },
+    { id: "permissions", label: "Permissions" },
+  ];
 
   return (
-    <div className="admin-overlay" onClick={onClose}>
-      <div className="admin-panel" onClick={(e) => e.stopPropagation()}>
-        
+    <div className="ap-overlay" onClick={onClose}>
+      <div className="ap-panel" onClick={(e) => e.stopPropagation()}>
+
         {/* Sidebar */}
-        <div className="admin-sidebar">
-          <div className="admin-sidebar-header">
-            <ShieldIcon />
-            <h2>Cogito Admin</h2>
+        <aside className="ap-sidebar">
+          <div className="ap-sidebar-brand">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#C5A059" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span>Cogito Admin</span>
           </div>
-          <nav className="admin-nav">
-            <button className={`admin-nav-item ${activeTab === "dashboard" ? "active" : ""}`} onClick={() => setActiveTab("dashboard")}>
-              <DashboardIcon /> Vue d'ensemble
-            </button>
-            <button className={`admin-nav-item ${activeTab === "users" ? "active" : ""}`} onClick={() => setActiveTab("users")}>
-              <UsersIcon /> Utilisateurs
-            </button>
-            <button className={`admin-nav-item ${activeTab === "groups" ? "active" : ""}`} onClick={() => setActiveTab("groups")}>
-              <FolderIcon /> Groupes
-            </button>
-            <button className={`admin-nav-item ${activeTab === "meets" ? "active" : ""}`} onClick={() => setActiveTab("meets")}>
-              <CalendarIcon /> Réunions
-            </button>
-            <div className="admin-nav-divider"></div>
-            <button className={`admin-nav-item ${activeTab === "settings" ? "active" : ""}`} onClick={() => setActiveTab("settings")}>
-              <SettingsIcon /> Système
-            </button>
+          <nav className="ap-nav">
+            {navItems.map((n) => (
+              <button key={n.id} className={`ap-nav-item ${tab === n.id ? "active" : ""}`} onClick={() => setTab(n.id)}>
+                {n.label}
+              </button>
+            ))}
           </nav>
-          <div className="admin-sidebar-footer">
-            <p>Connecté en tant que</p>
-            <strong>{currentUser?.username || "Admin"}</strong>
+          <div className="ap-sidebar-footer">
+            <div className="ap-user-chip">
+              <div className="ap-user-dot" />
+              <span>{currentUser?.username || "Admin"}</span>
+            </div>
           </div>
-        </div>
+        </aside>
 
-        {/* Main Content */}
-        <div className="admin-main">
-          <div className="admin-topbar">
-            <h1 className="admin-page-title">
-              {activeTab === "dashboard" && "Vue d'ensemble du système"}
-              {activeTab === "users" && "Gestion des utilisateurs"}
-              {activeTab === "groups" && "Gestion des groupes"}
-              {activeTab === "meets" && "Gestion des réunions"}
-              {activeTab === "settings" && "Paramètres système"}
+        {/* Main */}
+        <div className="ap-main">
+          <div className="ap-topbar">
+            <h1 className="ap-page-title">
+              {navItems.find((n) => n.id === tab)?.label}
             </h1>
-            <button className="admin-close-btn" onClick={onClose}>Fermer</button>
+            <button className="ap-close-btn" onClick={onClose}>✕ Fermer</button>
           </div>
 
-          <div className="admin-content-area">
-            
+          <div className="ap-content">
+
             {/* ── DASHBOARD ── */}
-            {activeTab === "dashboard" && (
-              <div className="admin-dashboard">
-                <div className="admin-stats-grid">
-                  <div className="admin-stat-card">
-                    <h3>Total Utilisateurs</h3>
-                    <div className="stat-value">{users.length}</div>
-                    <div className="stat-desc">Actifs: {activeUsersCount} | Bannis: {bannedUsersCount}</div>
+            {tab === "dashboard" && (
+              <div className="ap-dashboard">
+                <div className="ap-stat-grid">
+                  {[
+                    { label: "Total Utilisateurs", value: users.length, sub: `Actifs: ${activeUsers} | Bannis: ${bannedUsers}`, color: "#3b82f6" },
+                    { label: "Groupes", value: groups.length, sub: "Espaces de collaboration", color: "#10b981" },
+                    { label: "Réunions", value: meetings.length, sub: "Sessions vidéo", color: "#8b5cf6" },
+                    { label: "Système", value: "Optimal", sub: "Tous services actifs", color: "#C5A059" },
+                  ].map((s) => (
+                    <div key={s.label} className="ap-stat-card" style={{ "--accent": s.color }}>
+                      <div className="ap-stat-value">{s.value}</div>
+                      <div className="ap-stat-label">{s.label}</div>
+                      <div className="ap-stat-sub">{s.sub}</div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Mini charts row */}
+                <div className="ap-charts-row">
+                  <div className="ap-chart-card">
+                    <div className="ap-chart-header">
+                      <h3>Inscriptions (30 derniers jours)</h3>
+                    </div>
+                    <ResponsiveContainer width="100%" height={180}>
+                      <LineChart data={bucketByDay(users)}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                        <XAxis dataKey="date" tick={{ fill: "#64748b", fontSize: 10 }} interval={4} />
+                        <YAxis tick={{ fill: "#64748b", fontSize: 10 }} />
+                        <Tooltip content={<CustomTooltip />} />
+                        <Line type="monotone" dataKey="count" stroke="#C5A059" strokeWidth={2} dot={false} />
+                      </LineChart>
+                    </ResponsiveContainer>
                   </div>
-                  <div className="admin-stat-card">
-                    <h3>Groupes Actifs</h3>
-                    <div className="stat-value">{groups.length}</div>
-                    <div className="stat-desc">Espaces de collaboration</div>
-                  </div>
-                  <div className="admin-stat-card">
-                    <h3>Réunions Planifiées</h3>
-                    <div className="stat-value">{meetings.length}</div>
-                    <div className="stat-desc">Sessions vidéo futures</div>
-                  </div>
-                  <div className="admin-stat-card">
-                    <h3>État du Système</h3>
-                    <div className="stat-value status-ok">Optimal</div>
-                    <div className="stat-desc">Latence réseau: 12ms</div>
+
+                  <div className="ap-chart-card">
+                    <div className="ap-chart-header"><h3>Groupes actifs vs inactifs</h3></div>
+                    <ResponsiveContainer width="100%" height={180}>
+                      <PieChart>
+                        <Pie data={groupActivity} cx="50%" cy="50%" innerRadius={45} outerRadius={75} dataKey="value" paddingAngle={3}>
+                          {groupActivity.map((_, i) => <Cell key={i} fill={CHART_COLORS[i]} />)}
+                        </Pie>
+                        <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 12, color: "#94a3b8" }} />
+                        <Tooltip content={<CustomTooltip />} />
+                      </PieChart>
+                    </ResponsiveContainer>
                   </div>
                 </div>
-                
-                <div className="admin-recent-section">
-                  <h3>Activités Récentes</h3>
-                  <div className="admin-recent-list">
-                    <p className="admin-empty-state">L'historique des activités sera bientôt disponible.</p>
+              </div>
+            )}
+
+            {/* ── ANALYTICS ── */}
+            {tab === "analytics" && (
+              <div className="ap-analytics">
+                <div className="ap-time-switcher">
+                  {["day", "month"].map((s) => (
+                    <button key={s} className={`ap-time-btn ${timeScale === s ? "active" : ""}`} onClick={() => setTimeScale(s)}>
+                      {s === "day" ? "Par jour" : "Par mois"}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="ap-chart-card ap-chart-full">
+                  <div className="ap-chart-header">
+                    <h3>Inscriptions utilisateurs</h3>
+                    <span className="ap-chart-badge">{users.length} total</span>
+                  </div>
+                  <ResponsiveContainer width="100%" height={280}>
+                    <LineChart data={registrationData}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                      <XAxis dataKey="date" tick={{ fill: "#64748b", fontSize: 11 }} />
+                      <YAxis tick={{ fill: "#64748b", fontSize: 11 }} />
+                      <Tooltip content={<CustomTooltip />} />
+                      <Line type="monotone" dataKey="count" stroke="#C5A059" strokeWidth={2.5} dot={{ r: 3, fill: "#C5A059" }} activeDot={{ r: 6 }} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+
+                <div className="ap-charts-row">
+                  <div className="ap-chart-card">
+                    <div className="ap-chart-header"><h3>Distribution par université</h3></div>
+                    <ResponsiveContainer width="100%" height={240}>
+                      <PieChart>
+                        <Pie data={univDistribution} cx="50%" cy="50%" innerRadius={55} outerRadius={90} dataKey="value" paddingAngle={2}>
+                          {univDistribution.map((_, i) => <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />)}
+                        </Pie>
+                        <Tooltip content={<CustomTooltip />} />
+                        <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 11, color: "#94a3b8" }} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+
+                  <div className="ap-chart-card">
+                    <div className="ap-chart-header"><h3>Statut des comptes</h3></div>
+                    <ResponsiveContainer width="100%" height={240}>
+                      <PieChart>
+                        <Pie
+                          data={[
+                            { name: "Actifs", value: activeUsers },
+                            { name: "Bannis", value: bannedUsers },
+                            { name: "Non vérifiés", value: users.filter(u => !u.emailVerified && !u.banned).length },
+                          ]}
+                          cx="50%" cy="50%" innerRadius={55} outerRadius={90} dataKey="value" paddingAngle={2}
+                        >
+                          {[0,1,2].map((i) => <Cell key={i} fill={["#10b981","#ef4444","#f59e0b"][i]} />)}
+                        </Pie>
+                        <Tooltip content={<CustomTooltip />} />
+                        <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 11, color: "#94a3b8" }} />
+                      </PieChart>
+                    </ResponsiveContainer>
                   </div>
                 </div>
               </div>
             )}
 
             {/* ── USERS ── */}
-            {activeTab === "users" && (
-              <div className="admin-section">
-                <div className="admin-search-bar">
-                  <input
-                    placeholder="Rechercher par nom ou email..."
-                    value={searchUser}
-                    onChange={(e) => setSearchUser(e.target.value)}
-                  />
-                  <span className="search-count">{filteredUsers.length} résultat(s)</span>
+            {tab === "users" && (
+              <div className="ap-section">
+                <div className="ap-search-bar">
+                  <input placeholder="Rechercher par nom ou email…" value={searchUser} onChange={(e) => setSearchUser(e.target.value)} />
+                  <span className="ap-count">{filteredUsers.length} résultat(s)</span>
                 </div>
-                <div className="admin-list-container">
-                  <table className="admin-table">
-                    <thead>
-                      <tr>
-                        <th>Utilisateur</th>
-                        <th>Rôle</th>
-                        <th>Statut</th>
-                        <th>Actions</th>
-                      </tr>
-                    </thead>
+                <div className="ap-table-wrap">
+                  <table className="ap-table">
+                    <thead><tr><th>Utilisateur</th><th>Académique</th><th>Rôle</th><th>Statut</th><th>Actions</th></tr></thead>
                     <tbody>
                       {filteredUsers.map((u) => (
-                        <tr key={u.id} className={u.banned ? "row-banned" : ""}>
+                        <tr key={u.id} className={u.banned ? "ap-row-banned" : ""}>
                           <td>
-                            <div className="td-user">
-                              <div className="td-avatar">
-                                {u.avatar && !u.avatar.startsWith("./") ? (
-                                  <img src={u.avatar} alt="" />
-                                ) : (
-                                  <span>{(u.username || u.email || "?")[0].toUpperCase()}</span>
-                                )}
+                            <div className="ap-td-user">
+                              <div className="ap-avatar">
+                                {u.avatar && !u.avatar.startsWith("./")
+                                  ? <img src={u.avatar} alt="" />
+                                  : <span>{(u.username || u.email || "?")[0].toUpperCase()}</span>}
                               </div>
-                              <div className="td-info">
-                                <strong>{u.username || "Non renseigné"}</strong>
-                                <span>{u.email}</span>
+                              <div>
+                                <strong>{u.name || u.username || "—"}</strong>
+                                <small>{u.email}</small>
                               </div>
                             </div>
                           </td>
                           <td>
-                            {u.role === "admin" ? <span className="badge-admin">Administrateur</span> : <span className="badge-user">Standard</span>}
+                            <small style={{ color: "#94a3b8" }}>
+                              {u.academicInfo?.universite
+                                ? `${u.academicInfo.universite.slice(0, 20)}…`
+                                : "Non renseigné"}
+                            </small>
                           </td>
                           <td>
-                            {u.banned ? <span className="badge-banned">Suspendu</span> : <span className="badge-active">Actif</span>}
+                            <span className={`ap-badge ${u.role === "admin" ? "ap-badge-admin" : "ap-badge-user"}`}>
+                              {u.role === "admin" ? "Admin" : "Étudiant"}
+                            </span>
+                          </td>
+                          <td>
+                            <span className={`ap-badge ${u.banned ? "ap-badge-banned" : "ap-badge-active"}`}>
+                              {u.banned ? "Suspendu" : "Actif"}
+                            </span>
                           </td>
                           <td>
                             {u.id !== currentUser?.id && (
-                              <div className="td-actions">
-                                <button className={`action-btn ${u.banned ? "btn-unban" : "btn-ban"}`} onClick={() => handleBanUser(u)}>
-                                  <BanIcon /> {u.banned ? "Rétablir" : "Suspendre"}
+                              <div className="ap-actions">
+                                <button className={`ap-btn ${u.banned ? "ap-btn-green" : "ap-btn-red"}`} onClick={() => banUser(u)}>
+                                  {u.banned ? "Rétablir" : "Suspendre"}
                                 </button>
-                                <button className="action-btn btn-role" onClick={() => handlePromoteAdmin(u)}>
-                                  <CrownIcon /> {u.role === "admin" ? "Rétrograder" : "Promouvoir"}
+                                <button className="ap-btn ap-btn-gold" onClick={() => promoteUser(u)}>
+                                  {u.role === "admin" ? "Rétrograder" : "Promouvoir"}
                                 </button>
                               </div>
                             )}
@@ -259,53 +380,32 @@ const AdminPanel = ({ onClose }) => {
             )}
 
             {/* ── GROUPS ── */}
-            {activeTab === "groups" && (
-              <div className="admin-section">
-                <div className="admin-search-bar">
-                  <input
-                    placeholder="Rechercher un groupe..."
-                    value={searchGroup}
-                    onChange={(e) => setSearchGroup(e.target.value)}
-                  />
-                  <span className="search-count">{filteredGroups.length} résultat(s)</span>
+            {tab === "groups" && (
+              <div className="ap-section">
+                <div className="ap-search-bar">
+                  <input placeholder="Rechercher un groupe…" value={searchGroup} onChange={(e) => setSearchGroup(e.target.value)} />
+                  <span className="ap-count">{filteredGroups.length} groupe(s)</span>
                 </div>
-                <div className="admin-list-container">
-                  <table className="admin-table">
-                    <thead>
-                      <tr>
-                        <th>Groupe</th>
-                        <th>Membres</th>
-                        <th>Créateur ID</th>
-                        <th>Actions</th>
-                      </tr>
-                    </thead>
+                <div className="ap-table-wrap">
+                  <table className="ap-table">
+                    <thead><tr><th>Groupe</th><th>Membres</th><th>Type</th><th>Actions</th></tr></thead>
                     <tbody>
                       {filteredGroups.map((g) => (
                         <tr key={g.id}>
                           <td>
-                            <div className="td-user">
-                              <div className="td-avatar square">
-                                {g.groupImg ? (
-                                  <img src={g.groupImg} alt="" />
-                                ) : (
-                                  <span>{(g.groupName || "G")[0].toUpperCase()}</span>
-                                )}
+                            <div className="ap-td-user">
+                              <div className="ap-avatar ap-avatar-sq">
+                                {g.groupImg ? <img src={g.groupImg} alt="" /> : <span>{(g.groupName || "G")[0]}</span>}
                               </div>
-                              <div className="td-info">
-                                <strong>{g.groupName || "Sans nom"}</strong>
-                              </div>
+                              <strong>{g.groupName || "Sans nom"}</strong>
                             </div>
                           </td>
                           <td>{g.members?.length || 0}</td>
-                          <td className="td-mono">{g.adminId?.slice(0, 8)}...</td>
+                          <td><span className="ap-badge ap-badge-user">{g.groupType || "Private"}</span></td>
                           <td>
-                            <div className="td-actions">
-                              <button className="action-btn btn-role" onClick={() => setSelectedGroupMsgs(g)}>
-                                <FolderIcon /> Voir messages
-                              </button>
-                              <button className="action-btn btn-delete" onClick={() => handleDeleteGroup(g)}>
-                                <TrashIcon /> Supprimer
-                              </button>
+                            <div className="ap-actions">
+                              <button className="ap-btn ap-btn-gold" onClick={() => setSelectedGroup(g)}>Messages</button>
+                              <button className="ap-btn ap-btn-red" onClick={() => deleteGroup(g)}>Supprimer</button>
                             </div>
                           </td>
                         </tr>
@@ -317,57 +417,69 @@ const AdminPanel = ({ onClose }) => {
             )}
 
             {/* ── MEETS ── */}
-            {activeTab === "meets" && (
-              <div className="admin-section">
-                <div className="admin-list-container">
-                  <table className="admin-table">
-                    <thead>
-                      <tr>
-                        <th>Titre de la réunion</th>
-                        <th>Date & Heure</th>
-                        <th>Organisateur</th>
-                        <th>Actions</th>
-                      </tr>
-                    </thead>
+            {tab === "meets" && (
+              <div className="ap-section">
+                <div className="ap-table-wrap">
+                  <table className="ap-table">
+                    <thead><tr><th>Titre</th><th>Date</th><th>Organisateur</th><th>Actions</th></tr></thead>
                     <tbody>
+                      {meetings.length === 0 && <tr><td colSpan={4} className="ap-empty">Aucune réunion.</td></tr>}
                       {meetings.map((m) => (
                         <tr key={m.id}>
                           <td><strong>{m.title}</strong></td>
-                          <td>{m.date ? new Date(m.date.seconds * 1000).toLocaleString("fr-FR") : "Non définie"}</td>
+                          <td>{m.date ? new Date(m.date.seconds * 1000).toLocaleString("fr-FR") : "—"}</td>
                           <td>{m.creatorName || "Inconnu"}</td>
                           <td>
-                            <div className="td-actions">
-                              <button className="action-btn btn-delete" onClick={() => handleDeleteMeet(m)}>
-                                <TrashIcon /> Supprimer
-                              </button>
-                            </div>
+                            <button className="ap-btn ap-btn-red" onClick={() => deleteMeet(m)}>Supprimer</button>
                           </td>
                         </tr>
                       ))}
-                      {meetings.length === 0 && (
-                        <tr><td colSpan="4" className="admin-empty-state">Aucune réunion programmée.</td></tr>
-                      )}
                     </tbody>
                   </table>
                 </div>
               </div>
             )}
 
-            {/* ── SETTINGS ── */}
-            {activeTab === "settings" && (
-              <div className="admin-settings-section">
-                <div className="admin-settings-card">
-                  <h3>Configuration de la Base de Données</h3>
-                  <p>Serveur connecté : Firebase Firestore (Europe-West)</p>
-                  <p>Mode strict activé : Oui</p>
-                  <button className="action-btn btn-role" style={{marginTop: 15}}>Purger le cache</button>
-                </div>
-                <div className="admin-settings-card">
-                  <h3>Sécurité</h3>
-                  <p>Authentification Google : Activée</p>
-                  <p>Authentification Email/MDP : Activée</p>
-                  <p>Enregistrement public : Ouvert</p>
-                </div>
+            {/* ── PERMISSIONS ── */}
+            {tab === "permissions" && (
+              <div className="ap-permissions">
+                <p className="ap-permissions-intro">Gérez les rôles et accès par groupe. Les modifications sont appliquées en temps réel.</p>
+                {groups.map((g) => (
+                  <div key={g.id} className="ap-perm-card">
+                    <div className="ap-perm-header">
+                      <strong>{g.groupName || "Groupe"}</strong>
+                      <span className="ap-badge ap-badge-user">{g.members?.length || 0} membres</span>
+                    </div>
+                    <div className="ap-perm-row">
+                      <span>Seul l'admin peut poster</span>
+                      <div className={`ap-toggle ${g.settings?.onlyAdminCanPost ? "on" : ""}`}
+                        onClick={() => updateDoc(doc(db, "groups", g.id), {
+                          "settings.onlyAdminCanPost": !g.settings?.onlyAdminCanPost
+                        })}>
+                        <div className="ap-toggle-thumb" />
+                      </div>
+                    </div>
+                    <div className="ap-perm-row">
+                      <span>Médias autorisés</span>
+                      <div className={`ap-toggle ${g.settings?.allowMedia !== false ? "on" : ""}`}
+                        onClick={() => updateDoc(doc(db, "groups", g.id), {
+                          "settings.allowMedia": !(g.settings?.allowMedia !== false)
+                        })}>
+                        <div className="ap-toggle-thumb" />
+                      </div>
+                    </div>
+                    <div className="ap-perm-row">
+                      <span>Membres peuvent inviter</span>
+                      <div className={`ap-toggle ${g.settings?.membersCanInvite !== false ? "on" : ""}`}
+                        onClick={() => updateDoc(doc(db, "groups", g.id), {
+                          "settings.membersCanInvite": !(g.settings?.membersCanInvite !== false)
+                        })}>
+                        <div className="ap-toggle-thumb" />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {groups.length === 0 && <p className="ap-empty">Aucun groupe trouvé.</p>}
               </div>
             )}
 
@@ -375,36 +487,30 @@ const AdminPanel = ({ onClose }) => {
         </div>
       </div>
 
-      {/* ── GROUP MESSAGES MODAL ── */}
-      {selectedGroupMsgs && (
-        <div className="admin-overlay" style={{ zIndex: 10001, background: "rgba(0,0,0,0.6)" }} onClick={() => setSelectedGroupMsgs(null)}>
-          <div className="admin-panel" style={{ width: "600px", height: "600px", minHeight: "400px", flexDirection: "column" }} onClick={(e) => e.stopPropagation()}>
-            <div className="admin-topbar">
-              <h2 className="admin-page-title">Messages du groupe : {selectedGroupMsgs.groupName}</h2>
-              <button className="admin-close-btn" onClick={() => setSelectedGroupMsgs(null)}>Fermer</button>
+      {/* Group messages modal */}
+      {selectedGroup && (
+        <div className="ap-overlay" style={{ zIndex: 10001 }} onClick={() => setSelectedGroup(null)}>
+          <div className="ap-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="ap-modal-header">
+              <h2>{selectedGroup.groupName} — Messages</h2>
+              <button className="ap-close-btn" onClick={() => setSelectedGroup(null)}>✕</button>
             </div>
-            <div className="admin-content-area" style={{ background: "#f1f5f9" }}>
-              {(!selectedGroupMsgs.messages || selectedGroupMsgs.messages.length === 0) ? (
-                <p className="admin-empty-state">Aucun message dans ce groupe.</p>
-              ) : (
-                <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                  {selectedGroupMsgs.messages.map((msg, i) => (
-                    <div key={i} style={{ background: "#fff", padding: "12px", borderRadius: "8px", border: "1px solid #e2e8f0" }}>
-                      <div style={{ fontSize: "12px", color: "#64748b", marginBottom: "4px", fontWeight: "600" }}>
-                        ID Expéditeur: <span className="td-mono">{msg.senderId}</span>
-                      </div>
-                      <div style={{ color: "#0f172a", fontSize: "14px" }}>
-                        {msg.text || (msg.img ? "[Image envoyée]" : msg.audio ? "[Audio envoyé]" : msg.document ? "[Document envoyé]" : "[Contenu non supporté]")}
-                      </div>
-                      {msg.createdAt && (
-                        <div style={{ fontSize: "11px", color: "#94a3b8", marginTop: "6px", textAlign: "right" }}>
-                          {new Date(msg.createdAt.seconds ? msg.createdAt.seconds * 1000 : msg.createdAt).toLocaleString()}
-                        </div>
-                      )}
+            <div className="ap-modal-body">
+              {(!selectedGroup.messages?.length)
+                ? <p className="ap-empty">Aucun message.</p>
+                : selectedGroup.messages.map((msg, i) => (
+                  <div key={i} className="ap-msg-row">
+                    <div className="ap-msg-sender">{msg.senderName || msg.senderId?.slice(0, 8)}</div>
+                    <div className="ap-msg-text">
+                      {msg.text || (msg.img ? "[Image]" : msg.audio ? "[Audio]" : msg.document ? "[Document]" : "[—]")}
                     </div>
-                  ))}
-                </div>
-              )}
+                    {msg.createdAt && (
+                      <div className="ap-msg-time">
+                        {new Date(msg.createdAt.seconds ? msg.createdAt.seconds * 1000 : msg.createdAt).toLocaleString("fr-FR")}
+                      </div>
+                    )}
+                  </div>
+                ))}
             </div>
           </div>
         </div>

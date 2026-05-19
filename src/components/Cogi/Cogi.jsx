@@ -684,6 +684,22 @@ const Cogi = () => {
     setAttachOpen(false);
   };
 
+  /* ── Voice input (SpeechRecognition) ── */
+  const handleVoiceInput = () => {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) { toast?.error?.("Votre navigateur ne supporte pas la saisie vocale."); return; }
+    const recognition = new SR();
+    recognition.lang = "fr-FR";
+    recognition.interimResults = false;
+    recognition.onresult = (e) => {
+      const transcript = e.results[0][0].transcript;
+      setInput((prev) => (prev ? prev + " " + transcript : transcript));
+      setTimeout(() => textareaRef.current?.focus(), 50);
+    };
+    recognition.onerror = () => {};
+    recognition.start();
+  };
+
   /* ════════════════════ RENDER ════════════════════ */
   return (
     <div
@@ -703,110 +719,108 @@ const Cogi = () => {
 
       {/* ── Messages ── */}
       <div className="cogi-messages chat-centre">
-
-        {/* Floating Return Button */}
         {messages.length > 0 && (
-          <button className="cogi-return-btn" onClick={handleClear} title="Nouvelle discussion / Retour aux suggestions">
+          <button className="cogi-return-btn" onClick={handleClear} title="Nouvelle discussion">
             <span>‹</span> Retour aux suggestions
           </button>
         )}
 
-        {/* Welcome */}
+        {/* ── Welcome + Suggestion Cards ── */}
         {messages.length === 0 && !isLoading && (
           <div className="cogi-welcome">
+            <div className="cogi-welcome-glow" />
             <h2 className="cogi-welcome-title">
-              Bienvenue sur <span className="cogi-brand-script">COGI</span> IA
+              Bonjour Je suis <span className="cogi-brand-script">COGI</span>
             </h2>
-            <p className="cogi-welcome-sub">Un assistant universel — éducation, sport, culture, informatique&nbsp;…</p>
-            <div className="cogi-suggestions">
+            <p className="cogi-welcome-sub">Votre assistant IA — éducation, code, culture, création&nbsp;…</p>
+            <div className="cogi-suggestions-grid">
               {SUGGESTIONS.map((s, i) => (
                 <button
-                  key={i}
-                  className="cogi-suggestion-card"
-                  style={{ animationDelay: `${i * 0.06}s` }}
+                  key={s.id}
+                  className="cogi-sug-card"
+                  style={{ animationDelay: `${i * 0.07}s`, "--card-color": s.color }}
                   onClick={() => {
                     if (s.autoSend) sendMessage(s.prompt);
-                    else {
-                      setInput(s.prompt);
-                      textareaRef.current?.focus();
-                    }
+                    else { setInput(s.prompt); textareaRef.current?.focus(); }
                   }}
                 >
-                  <span className="cogi-sug-icon" style={{ background: s.color + "22", color: s.color }}>
+                  <span className="cogi-sug-card-icon" style={{ background: s.color + "18", color: s.color }}>
                     {s.icon}
                   </span>
-                  <span className="cogi-sug-label">{s.label}</span>
+                  <div className="cogi-sug-card-body">
+                    <span className="cogi-sug-card-label">{s.label}</span>
+                    <span className="cogi-sug-card-hint">
+                      {s.autoSend ? "Cliquer pour démarrer" : "Cliquer pour préparer"}
+                    </span>
+                  </div>
+                  <svg className="cogi-sug-card-arrow" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2">
+                    <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+                  </svg>
                 </button>
               ))}
             </div>
           </div>
         )}
 
-        {/* Messages */}
         {messages.map(renderMsg)}
 
-        {/* Thinking indicator */}
         {isLoading && (
           <div className="cogi-message-wrap cogi-msg-ai">
             <img src="/image/favicon.png" alt="Cogi" className="cogi-ai-avatar-img" />
             <TypingBubble />
           </div>
         )}
-
         <div ref={endRef} />
       </div>
 
-      {/* ── Input bar — identical structure to Chat ── */}
-      <div className="chat-bottom cogi-bottom">
-        <div className="chat-input-wrap cogi-input-wrap-inner">
+      {/* ── Premium Input Bar ── */}
+      <div className="cogi-input-bar">
+        <div className="cogi-input-container">
 
-          {/* Plus / attach */}
-          <div className="attach-wrap">
+          {/* Attach popup */}
+          <div className="cogi-attach-wrap">
             <button
-              className="icon-btn plus-btn"
+              className={`cogi-fab-btn ${attachOpen ? "active" : ""}`}
               onClick={() => setAttachOpen(o => !o)}
               title="Joindre"
+              style={{ background: attachOpen ? "rgba(197, 160, 89, 0.15)" : "" }}
             >
-              {/* Same PlusSVG as Chat */}
-              <svg
-                className={`plus-svg${attachOpen ? " rotated" : ""}`}
-                viewBox="0 0 24 24" width="22" height="22"
-                stroke={attachOpen ? "#C5A059" : "currentColor"}
-                strokeWidth="2.5" fill="none" strokeLinecap="round"
-              >
-                <line x1="12" y1="5" x2="12" y2="19" />
-                <line x1="5"  y1="12" x2="19" y2="12" />
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none"
+                stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                style={{ transform: attachOpen ? "rotate(135deg)" : "none", transition: "transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)" }}>
+                <line x1="12" y1="7" x2="12" y2="17" />
+                <line x1="7"  y1="12" x2="17" y2="12" />
               </svg>
             </button>
 
-            {/* Attach menu */}
             {attachOpen && (
-              <div className="attach-menu">
-                <button className="attach-item" onClick={() => { fileImgRef.current?.click(); }}>
-                  <span className="attach-icon-circle" style={{ background: "#ede9fe" }}>
-                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="#8b5cf6" strokeWidth="1.8" fill="none" strokeLinecap="round">
-                      <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+              <div className="cogi-attach-popup">
+                <button className="cogi-attach-opt" onClick={() => { fileImgRef.current?.click(); setAttachOpen(false); }}>
+                  <span style={{ background: "#ede9fe", color: "#8b5cf6" }} className="cogi-attach-opt-icon">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                      <circle cx="8.5" cy="8.5" r="1.5"/>
                       <polyline points="21 15 16 10 5 21"/>
                     </svg>
                   </span>
-                  Image
+                  Analyser image
                 </button>
-                <button className="attach-item" onClick={() => handleStructuredAction("doc")}>
-                  <span className="attach-icon-circle" style={{ background: "#dcfce7" }}>
-                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="#16a34a" strokeWidth="1.8" fill="none" strokeLinecap="round">
+                <button className="cogi-attach-opt" onClick={() => { handleStructuredAction("doc"); setAttachOpen(false); }}>
+                  <span style={{ background: "#dcfce7", color: "#16a34a" }} className="cogi-attach-opt-icon">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                      <polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/>
+                      <polyline points="14 2 14 8 20 8"/>
+                      <line x1="16" y1="13" x2="8" y2="13"/>
                       <line x1="16" y1="17" x2="8" y2="17"/>
+                      <polyline points="10 9 9 9 8 9"/>
                     </svg>
                   </span>
                   Générer document
                 </button>
-                <button className="attach-item" onClick={() => handleStructuredAction("img")}>
-                  <span className="attach-icon-circle" style={{ background: "#fef3c7" }}>
-                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="#d97706" strokeWidth="1.8" fill="none" strokeLinecap="round">
-                      <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/>
-                      <line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-                      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                <button className="cogi-attach-opt" onClick={() => { handleStructuredAction("img"); setAttachOpen(false); }}>
+                  <span style={{ background: "#fef3c7", color: "#d97706" }} className="cogi-attach-opt-icon">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
                     </svg>
                   </span>
                   Générer image
@@ -815,48 +829,64 @@ const Cogi = () => {
             )}
           </div>
 
-          {/* Textarea */}
+          {/* Expanding textarea */}
           <textarea
             ref={textareaRef}
-            className="cogi-textarea"
+            className="cogi-premium-textarea"
             rows={1}
-            placeholder="hey how are you, need a help?"
+            placeholder="Posez votre question à COGI…"
             value={input}
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
             disabled={isLoading}
           />
 
-          {/* Clear (only with messages) */}
+          {/* Voice button */}
+          <button
+            className="cogi-fab-btn cogi-voice-btn"
+            onClick={handleVoiceInput}
+            title="Saisie vocale"
+            disabled={isLoading}
+          >
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+              <line x1="12" y1="19" x2="12" y2="22"/>
+            </svg>
+          </button>
+
+          {/* Clear */}
           {messages.length > 0 && (
-            <button className="icon-btn" onClick={handleClear} title="Effacer la conversation"
-              style={{ fontSize: 16, color: "#94a3b8" }}>
-              🗑
+            <button className="cogi-fab-btn" onClick={handleClear} title="Nouvelle conversation" style={{ color: "#ef4444" }}>
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="3 6 5 6 21 6"/>
+                <path d="M19 6l-2 14H7L5 6"/>
+                <path d="M10 11v6"/><path d="M14 11v6"/>
+                <path d="M9 6V4h6v2"/>
+              </svg>
             </button>
           )}
 
-          {/* Send — identical to Chat's send-btn */}
+          {/* Send button */}
           <button
-            className="send-btn"
+            className={`cogi-send-btn ${isLoading ? "loading" : ""}`}
             onClick={() => sendMessage()}
             disabled={isLoading || !input.trim()}
             title="Envoyer (Entrée)"
           >
-            <div className={`send-icon-container${isLoading ? "" : ""}`}>
-              {isLoading ? (
-                <span className="cogi-spinner" />
-              ) : (
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none"
-                  stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="22" y1="2" x2="11" y2="13" />
-                  <polygon points="22 2 15 22 11 13 2 9 22 2" fill="#fff" />
-                </svg>
-              )}
-            </div>
+            {isLoading ? (
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="6" y="6" width="12" height="12" rx="2" fill="rgba(255,255,255,0.6)"/>
+              </svg>
+            ) : (
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ transform: "translateX(-1px) translateY(1px)" }}>
+                <line x1="22" y1="2" x2="11" y2="13"/>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+              </svg>
+            )}
           </button>
         </div>
-
-        <p className="cogi-input-hint">Entrée pour envoyer · Maj+Entrée pour nouvelle ligne</p>
+        <p className="cogi-input-hint">Entrée pour envoyer &middot; Maj+Entrée pour nouvelle ligne</p>
       </div>
     </div>
   );
