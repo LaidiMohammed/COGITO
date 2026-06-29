@@ -1,6 +1,7 @@
 import Login from "./components/Login/Login";
 import Navbar from "./components/Navbar/Navbar";
 import Notification from "./components/Notification/notification";
+import Welcome from "./components/Welcome/Welcome";
 import Groups from "./components/Groups/Groups";
 import Meet from "./components/Meet/Meet";
 import Cours from "./components/Cours/Cours";
@@ -8,6 +9,7 @@ import Cogi from "./components/Cogi/Cogi";
 import AdminPanel from "./components/Admin/AdminPanel";
 import ChatPage from "./pages/ChatPage";
 import Settings from "./components/Settings/Settings";
+import ChatFAB from "./components/ChatFAB/ChatFAB";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./lib/firebase";
 import { useEffect, useState } from "react";
@@ -18,8 +20,8 @@ const App = () => {
   const { currentUser, isLoading, fetchUserInfo, setUser } = useUserStore();
   const { darkMode, toggleDarkMode, showSettings, toggleSettings } = useChatStore();
 
-  const [page, setPage] = useState("chat");
-  const [active, setActive] = useState("chat");
+  const [page, setPage] = useState("home");
+  const [active, setActive] = useState("home");
   const [showAdmin, setShowAdmin] = useState(false);
 
   const changePage = (p) => { setPage(p); setActive(p); };
@@ -77,11 +79,14 @@ const App = () => {
               active={active}
               onOpenAdmin={currentUser.role === "admin" ? () => setShowAdmin(true) : null}
             />
-            {page === "chat"   && <ChatPage setPage={changePage} />}
-            {page === "groups" && <Groups setPage={changePage} />}
-            {page === "meet"   && <Meet />}
-            {page === "cours"  && <Cours />}
-            {page === "cogi"   && <Cogi />}
+            <div className="page-transition" key={page}>
+              {page === "home" && <Welcome setPage={changePage} />}
+              {page === "chat" && <ChatPage setPage={changePage} />}
+              {page === "groups" && <Groups setPage={changePage} />}
+              {page === "meet" && <Meet />}
+              {page === "cours" && <Cours />}
+              {page === "cogi" && <Cogi />}
+            </div>
 
             <Settings
               isOpen={showSettings}
@@ -100,6 +105,7 @@ const App = () => {
         ) : (
           <Login />
         )}
+        <ChatFAB currentPage={page} setPage={changePage} />
         <Notification />
       </div>
     </>

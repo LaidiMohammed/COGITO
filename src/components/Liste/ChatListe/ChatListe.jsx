@@ -6,7 +6,7 @@ import { useUserStore } from "../../../lib/userStore";
 import { doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { db } from "../../../lib/firebase";
 import { useChatStore } from "../../../lib/chatStore";
-import { VolumeX } from "lucide-react";
+import { VolumeX, Pin, Bell, BellOff, Trash2 } from "lucide-react";
 import { resolveAvatar } from "../../../lib/media";
 
 const EMPTY_USER = {
@@ -29,8 +29,16 @@ const ChatListe = () => {
   const [viewMode, setViewMode] = useState("general");
 
   const { currentUser } = useUserStore();
-  const { changeChat, mutedChats, muteChat, chatId } = useChatStore();
+  const { changeChat, mutedChats, muteChat, chatId, isGroupChat } = useChatStore();
   const menuRef = useRef(null);
+
+  useEffect(() => {
+    if (isGroupChat) {
+      setViewMode("groups");
+    } else if (chatId) {
+      setViewMode("general");
+    }
+  }, [isGroupChat, chatId]);
 
   useEffect(() => {
     if (!currentUser?.id) return undefined;
@@ -161,38 +169,42 @@ const ChatListe = () => {
 
   return (
     <div className="Chatliste">
-      <div className="Recherche">
-        <div className="BarreRecherche">
-          <img src="./search.png" alt="" />
-          <input
-            type="text"
-            placeholder="Recherche"
-            onChange={(e) => setInput(e.target.value)}
+        <div className="Recherche">
+          <div className="BarreRecherche">
+            <img src="./search.png" alt="" />
+            <input
+              type="text"
+              placeholder="Recherche"
+              onChange={(e) => setInput(e.target.value)}
+            />
+          </div>
+          <img
+            src={addMode ? "./minus.png" : "./plus.png"}
+            alt=""
+            className={`add plus-animate${addMode ? " rotated" : ""}`}
+            onClick={() => setAddMode((prev) => !prev)}
           />
         </div>
-        <img
-          src={addMode ? "./minus.png" : "./plus.png"}
-          alt=""
-          className={`add plus-animate${addMode ? " rotated" : ""}`}
-          onClick={() => setAddMode((prev) => !prev)}
-        />
-      </div>
 
-      {/* Toggle Buttons */}
-      <div className="view-toggle">
-        <button
-          className={`toggle-btn ${viewMode === "general" ? "active" : ""}`}
-          onClick={() => setViewMode("general")}
-        >
-          Messages
-        </button>
-        <button
-          className={`toggle-btn ${viewMode === "groups" ? "active" : ""}`}
-          onClick={() => setViewMode("groups")}
-        >
-          Groupes
-        </button>
-      </div>
+        {/* Toggle Buttons */}
+        <div className="view-toggle">
+          <button
+            className={`toggle-btn ${viewMode === "general" ? "active" : ""}`}
+            onClick={() => setViewMode("general")}
+            style={{ position: "relative" }}
+          >
+            Messages
+            {filteredChats.some((c) => !c.isSeen) && (
+              <span className="toggle-notif-dot"></span>
+            )}
+          </button>
+          <button
+            className={`toggle-btn ${viewMode === "groups" ? "active" : ""}`}
+            onClick={() => setViewMode("groups")}
+          >
+            Groupes
+          </button>
+        </div>
 
       {/* Section: Messages Privés */}
       {viewMode === "general" && filteredChats.length > 0 && (
@@ -229,10 +241,8 @@ const ChatListe = () => {
                   }
                   alt=""
                 />
-                {chat.unreadCount > 0 && (
-                  <span className="notif-badge badge-animated">
-                    {chat.unreadCount}
-                  </span>
+                {!chat?.isSeen && (
+                  <span className="notif-badge badge-animated"></span>
                 )}
               </div>
 
@@ -241,7 +251,9 @@ const ChatListe = () => {
                   <span>
                     {isBlocked ? "User" : chat.pseudo || chat.user?.username}
                   </span>
-                  {chat.pinned && <span className="pin-icon">📍</span>}
+                  {chat.pinned && (
+                    <Pin size={12} color="#C5A059" style={{ marginLeft: 4 }} />
+                  )}
                   {mutedChats?.[chat.chatId] && (
                     <span className="mute-icon" title="En sourdine">
                       <VolumeX size={12} color="#6366f1" />
@@ -269,15 +281,25 @@ const ChatListe = () => {
           ref={menuRef}
         >
           <div className="context-item" onClick={handlePin}>
-            📍 {contextMenu.chat?.pinned ? "Désépingler" : "Épingler"}
+            <Pin size={14} />
+            <span>{contextMenu.chat?.pinned ? "Désépingler" : "Épingler"}</span>
           </div>
           <div className="context-item" onClick={handleMuteContext}>
-            {mutedChats?.[contextMenu.chat?.chatId]
-              ? "🔔 Activer"
-              : "🔇 Sourdine"}
+            {mutedChats?.[contextMenu.chat?.chatId] ? (
+              <>
+                <Bell size={14} />
+                <span>Activer</span>
+              </>
+            ) : (
+              <>
+                <BellOff size={14} />
+                <span>Sourdine</span>
+              </>
+            )}
           </div>
           <div className="context-item delete" onClick={handleDelete}>
-            🗑️ Supprimer
+            <Trash2 size={14} />
+            <span>Supprimer</span>
           </div>
         </div>
       )}

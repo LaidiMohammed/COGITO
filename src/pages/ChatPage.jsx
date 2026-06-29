@@ -1,9 +1,9 @@
 import Liste from "../components/Liste/Liste";
 import Chat from "../components/Chat/Chat";
 import Details from "../components/Details/Details";
-import Welcome from "../components/Welcome/Welcome";
 import Settings from "../components/Settings/Settings";
 import GroupChatWindow from "../components/Groups/GroupChatWindow";
+import { MessageCircle } from "lucide-react";
 import "./ChatPage.css";
 import { useChatStore } from "../lib/chatStore";
 import { useUserStore } from "../lib/userStore";
@@ -28,8 +28,17 @@ const ChatPage = ({ setPage }) => {
   return (
     <div className="chatPage">
       <Liste />
-      {!chatId && <Welcome setPage={setPage} />}
-      {chatId && (isGroupChat ? <GroupChatWindow /> : <Chat />)}
+      {!chatId ? (
+        <div className="chat-empty">
+          <MessageCircle size={48} strokeWidth={1.5} />
+          <h3>Messagerie</h3>
+          <p>Sélectionnez une conversation ou démarrez-en une nouvelle.</p>
+        </div>
+      ) : isGroupChat ? (
+        <GroupChatWindow />
+      ) : (
+        <Chat />
+      )}
       {chatId && showDetails && <Details />}
 
       <Settings

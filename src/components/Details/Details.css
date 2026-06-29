@@ -11,6 +11,18 @@
   background: #f4f4f5; /* Light gray background like TG */
   scrollbar-width: thin;
   scrollbar-color: rgba(0, 33, 71, 0.15) transparent;
+  animation: slideInDetails 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+@keyframes slideInDetails {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .Details::-webkit-scrollbar {

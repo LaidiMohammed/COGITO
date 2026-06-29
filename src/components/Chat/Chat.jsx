@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import "./Chat.css";
-import EmojiPicker from "emoji-picker-react";
+import EmojiPicker, { Emoji } from "emoji-picker-react";
 import { useChatStore } from "../../lib/chatStore";
 import { db } from "../../lib/firebase";
 import { useUserStore } from "../../lib/userStore";
@@ -25,6 +25,7 @@ import {
   cloneMessageForForward,
   createMessageId,
   downloadFile,
+  emojiToUnified,
   getAttachmentUrl,
   getDocumentName,
   getDownloadName,
@@ -579,6 +580,7 @@ const Chat = () => {
   const buildCurrentMessagePayload = ({
     fileUrl = "",
     fileType = "",
+    fileName = "",
     extra = {},
   } = {}) => ({
     id: createMessageId(),
@@ -591,12 +593,12 @@ const Chat = () => {
     ...(fileUrl &&
       fileType === "image" && {
         img: fileUrl,
-        imgName: file.data?.name || `image-${Date.now()}.jpg`,
+        imgName: fileName || `image-${Date.now()}.jpg`,
       }),
     ...(fileUrl &&
       fileType === "document" && {
         document: fileUrl,
-        documentName: file.data?.name || "document",
+        documentName: fileName || "document",
         documentMimeType: file.data?.type || "application/octet-stream",
       }),
     ...(fileUrl &&
@@ -691,6 +693,7 @@ const Chat = () => {
       const payload = buildCurrentMessagePayload({
         fileUrl,
         fileType: currentFile?.type ?? file.type,
+        fileName: currentFile?.data?.name || file?.data?.name || "",
       });
       // Patch: use captured currentText instead of state (already cleared)
       payload.text = currentText;
@@ -971,18 +974,38 @@ const Chat = () => {
     setActiveMessageIndex(null);
   };
 
-  const handleToggleReaction = async (messageIndex, emoji) => {
+  const handleToggleReaction = async (message, emoji) => {
     if (!chat?.messages) return;
+    try {
+      const col = isGroupChat ? "groups" : "chats";
+      const docRef = doc(db, col, chatId);
 
-    const messages = [...chat.messages];
-    messages[messageIndex] = {
-      ...messages[messageIndex],
-      reactions: toggleReaction(messages[messageIndex], emoji, currentUser.id),
-    };
+      // Create the updated message
+      const updatedMessage = {
+        ...message,
+        reactions: toggleReaction(message, emoji, currentUser.id),
+      };
 
-    await updateDoc(doc(db, getChatCollection(isGroupChat), chatId), {
-      messages,
-    });
+      // Try replacing the array first (preserves exact order)
+      const newMessages = chat.messages.map((m) =>
+        m.id === message.id ? updatedMessage : m
+      );
+
+      try {
+        await updateDoc(docRef, { messages: newMessages });
+      } catch (err) {
+        // Fallback to arrayRemove/arrayUnion if Firestore rules block full array replacement
+        await updateDoc(docRef, {
+          messages: arrayRemove(message)
+        });
+        await updateDoc(docRef, {
+          messages: arrayUnion(updatedMessage)
+        });
+      }
+    } catch (err) {
+      console.error("Failed to toggle reaction:", err);
+      toast.error("Erreur de réaction: " + err.message);
+    }
   };
 
   const handleForwardAction = (message) => {
@@ -1019,13 +1042,12 @@ const Chat = () => {
     }))
     .filter((item) => item.chatId !== chatId);
 
-  // Suppression de la réaction de l'utilisateur
   const handleRemoveReaction = (emoji, users) => {
     if (!users.includes(currentUser.id)) return;
-    const msgIdx = chat?.messages?.findIndex(
+    const msg = chat?.messages?.find(
       (m) => m.reactions && m.reactions[emoji]?.includes(currentUser.id),
     );
-    if (msgIdx !== -1) handleToggleReaction(msgIdx, emoji);
+    if (msg) handleToggleReaction(msg, emoji);
     setReactionMenu({ ...reactionMenu, visible: false });
   };
 
@@ -1300,7 +1322,11 @@ const Chat = () => {
       {/* ═══ MESSAGES ═══════════════════════════════════════════ */}
 
       <div className="chat-centre" ref={chatCentreRef}>
-        {chat?.messages?.map((message, i) => {
+        {(chat?.messages?.slice().sort((a, b) => {
+          const tA = a.createdAt?.toMillis ? a.createdAt.toMillis() : new Date(a.createdAt).getTime();
+          const tB = b.createdAt?.toMillis ? b.createdAt.toMillis() : new Date(b.createdAt).getTime();
+          return tA - tB;
+        }) || []).map((message, i) => {
           const reactionEntries = Object.entries(
             message.reactions || {},
           ).filter(([, users]) => users?.length);
@@ -1364,21 +1390,6 @@ const Chat = () => {
                         alt=""
                         className="chat-img messenger-style"
                       />
-                      <div className="chat-reactions-overlay">
-                        {REACTION_OPTIONS.map((emoji) => (
-                          <button
-                            key={emoji}
-                            className="reaction-btn"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleToggleReaction(i, emoji);
-                            }}
-                            aria-label={`Réagir avec ${emoji}`}
-                          >
-                            {emoji}
-                          </button>
-                        ))}
-                      </div>
                     </div>
                   )}
                   {message.document && (
@@ -1509,9 +1520,13 @@ const Chat = () => {
                       <span
                         key={emoji}
                         className={`chat-reaction-chip ${users.includes(currentUser.id) ? "own" : ""}`}
-                        onClick={() => handleToggleReaction(i, emoji)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleToggleReaction(message, emoji);
+                        }}
                         onContextMenu={(e) => {
                           e.preventDefault();
+                          e.stopPropagation();
                           setReactionMenu({
                             visible: true,
                             x: e.clientX,
@@ -1522,7 +1537,9 @@ const Chat = () => {
                         }}
                         style={{ userSelect: "none" }}
                       >
-                        <span>{emoji}</span>
+                        <span style={{ pointerEvents: "none", display: "inline-flex" }}>
+                          <Emoji unified={emojiToUnified(emoji)} emojiStyle="apple" size={16} />
+                        </span>
                         <span>{users.length}</span>
                       </span>
                     ))}
@@ -1536,9 +1553,15 @@ const Chat = () => {
                         <button
                           key={emoji}
                           type="button"
-                          onClick={() => handleToggleReaction(i, emoji)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleToggleReaction(message, emoji);
+                            setActiveMessageIndex(null);
+                          }}
                         >
-                          {emoji}
+                          <span style={{ pointerEvents: "none", display: "inline-flex" }}>
+                            <Emoji unified={emojiToUnified(emoji)} emojiStyle="apple" size={20} />
+                          </span>
                         </button>
                       ))}
                     </div>
@@ -1769,8 +1792,8 @@ const Chat = () => {
               minWidth: 220,
             }}
           >
-            <div style={{ fontWeight: 600, marginBottom: 8 }}>
-              Utilisateurs ayant réagi {showReactUsers.emoji}
+            <div style={{ fontWeight: 600, marginBottom: 8, display: "flex", alignItems: "center", gap: 6 }}>
+              Utilisateurs ayant réagi {showReactUsers.emoji && <Emoji unified={emojiToUnified(showReactUsers.emoji)} emojiStyle="apple" size={16} />}
             </div>
             <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
               {showReactUsers.users.length === 0 ? (

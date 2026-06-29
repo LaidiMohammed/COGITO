@@ -1,6 +1,13 @@
 const FALLBACK_FILE_NAME = "document";
 
-export const REACTION_OPTIONS = ["👍", "❤️", "😀", "😮", "😭", "🎉"];
+export const REACTION_OPTIONS = ["❤️", "👍", "👎", "😂", "😮", "😢", "🙏", "🔥"];
+
+export const emojiToUnified = (emoji) => {
+  return Array.from(emoji)
+    .map((c) => c.codePointAt(0).toString(16))
+    .filter((hex) => hex !== "fe0f")
+    .join("-");
+};
 
 export const createMessageId = () => {
   if (

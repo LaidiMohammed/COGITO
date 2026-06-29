@@ -59,18 +59,24 @@
 
 /* Dark mode tokens */
 .container.dark {
-  --bg-primary:    #0f172a;
-  --bg-secondary:  #1e293b;
-  --surface:       rgba(30,41,59,0.9);
-  --surface-raised: rgba(30,41,59,0.95);
-  --text-main:     #f1f5f9;
-  --text-muted:    #94a3b8;
-  --border-color:  rgba(255,255,255,0.08);
-  --border-subtle: rgba(255,255,255,0.04);
-  --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
-  --shadow-md: 0 8px 24px rgba(0,0,0,0.4);
-  --shadow-lg: 0 12px 32px rgba(0,0,0,0.5);
-  --shadow-xl: 0 24px 64px rgba(0,0,0,0.6);
+  --bg-primary:    #080d1a;
+  --bg-secondary:  #0f1629;
+  --surface:       rgba(15,22,41,0.88);
+  --surface-raised: rgba(15,22,41,0.94);
+  --text-main:     #e8edf5;
+  --text-muted:    #8892a8;
+  --border-color:  rgba(255,255,255,0.06);
+  --border-subtle: rgba(255,255,255,0.03);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.4);
+  --shadow-md: 0 8px 24px rgba(0,0,0,0.5);
+  --shadow-lg: 0 12px 32px rgba(0,0,0,0.6);
+  --shadow-xl: 0 24px 64px rgba(0,0,0,0.7);
+  color-scheme: dark;
+}
+
+.container.dark ::selection {
+  background: rgba(197,160,89,0.3);
+  color: #fff;
 }
 
 /* ══ Reset ═══════════════════════════════════════════════ */
@@ -82,28 +88,38 @@
 
 h1, h2, h3, h4, h5, h6 { font-family: "Poppins", sans-serif; }
 
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
 body {
   background: var(--bg-primary);
   color: var(--text-main);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 /* ══ App Container ═══════════════════════════════════════ */
 .container {
-  width: 100vw; height: 100vh; min-height: 100vh;
+  width: 100%; height: 100%;
   background-color: var(--bg-primary);
   background-image: url("/backround.png");
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
   transition: background-color var(--ease-smooth);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
-.container.dark { background-image: none; }
+.container.dark {
+  background-image: url("/darkmode.png");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
 
 /* ══ Premium Scrollbar ═══════════════════════════════════ */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
@@ -128,6 +144,9 @@ body {
   width: 480px; height: 480px;
   object-fit: contain; border-radius: 20px;
 }
+.container.dark .loading-video-overlay {
+  background: #080d1a;
+}
 
 /* ══ Utility Classes ══════════════════════════════════════ */
 .glass-panel {
@@ -137,7 +156,7 @@ body {
   box-shadow: var(--shadow-md);
 }
 .container.dark .glass-panel {
-  background: rgba(30,41,59,0.85);
+  background: rgba(15,22,41,0.85);
   border: 1px solid rgba(255,255,255,0.05);
 }
 
@@ -145,6 +164,22 @@ body {
 :focus-visible {
   outline: 2px solid rgba(197,160,89,0.6);
   outline-offset: 2px;
+}
+
+/* ══ Page transitions ════════════════════════════════════ */
+.page-transition {
+  flex: 1;
+  display: flex;
+  width: 100%;
+  overflow: hidden;
+}
+.page-transition > * {
+  width: 100%;
+  animation: pageIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(24px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 /* ══ Global Micro-interaction keyframes ═══════════════════ */

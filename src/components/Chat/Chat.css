@@ -1137,6 +1137,10 @@
   gap: 6px;
 }
 
+.chat-message.own .chat-bubble-shell {
+  align-items: flex-end;
+}
+
 .chat-bubble-more {
   position: absolute;
   top: 6px;

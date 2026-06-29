@@ -50,6 +50,7 @@ const Details = () => {
   // Recherche médias/fichiers
   const [mediaSearch, setMediaSearch] = useState("");
   const [fileSearch, setFileSearch] = useState("");
+  const [textSearch, setTextSearch] = useState("");
   // Suppression de l'historique
   const handleClearHistory = async () => {
     if (!chatId) return;
@@ -152,12 +153,14 @@ const Details = () => {
     ? sharedImages.filter(
         (m) =>
           (m.imgName || "").toLowerCase().includes(mediaSearch.toLowerCase()) ||
-          (m.caption || "").toLowerCase().includes(mediaSearch.toLowerCase()),
+          (m.text || "").toLowerCase().includes(mediaSearch.toLowerCase()),
       )
     : sharedImages;
   const filteredDocs = fileSearch.trim()
-    ? sharedDocs.filter((m) =>
-        (m.documentName || "").toLowerCase().includes(fileSearch.toLowerCase()),
+    ? sharedDocs.filter(
+        (m) =>
+          (m.documentName || "").toLowerCase().includes(fileSearch.toLowerCase()) ||
+          (m.text || "").toLowerCase().includes(fileSearch.toLowerCase()),
       )
     : sharedDocs;
 
@@ -225,10 +228,20 @@ const Details = () => {
     </div>
   );
 
-  /* MEDIA GRID */
-  if (section === "media")
-    return (
-      <div className={`Details ${darkMode ? "dark" : ""}`}>
+  const baseName = isGroupChat ? groupInfo?.name : activeUser?.username;
+  const displayName = customPseudo || baseName;
+  const displayAvatar = isGroupChat
+    ? "./Groups.png"
+    : resolveAvatar(activeUser?.avatar);
+  const displaySub = isGroupChat
+    ? `${groupInfo?.memberCount || ""} membres`
+    : "En ligne";
+
+  return (
+    <div className={`Details ${darkMode ? "dark" : ""}`}>
+      {/* ─── MEDIA GRID ─── */}
+      {section === "media" && (
+        <>
         <SectionHeader title="Médias partagés" />
         <input
           type="text"
@@ -386,13 +399,12 @@ const Details = () => {
             onClick={() => setImgMenu({ ...imgMenu, visible: false })}
           />
         )}
-      </div>
-    );
+        </>
+      )}
 
-  /* FILES LIST */
-  if (section === "files")
-    return (
-      <div className={`Details ${darkMode ? "dark" : ""}`}>
+      {/* ─── FILES LIST ─── */}
+      {section === "files" && (
+        <>
         <SectionHeader title="Fichiers partagés" />
         <input
           type="text"
@@ -440,31 +452,50 @@ const Details = () => {
             })}
           </div>
         )}
-      </div>
-    );
+        </>
+      )}
 
-  /* ─── MAIN VIEW ─── */
-  const baseName = isGroupChat ? groupInfo?.name : activeUser?.username;
-  const displayName = customPseudo || baseName;
-  const displayAvatar = isGroupChat
-    ? "./Groups.png"
-    : resolveAvatar(activeUser?.avatar);
-  const displaySub = isGroupChat
-    ? `${groupInfo?.memberCount || ""} membres`
-    : "En ligne";
+      {/* ─── SEARCH VIEW ─── */}
+      {section === "search" && (
+        <>
+          <SectionHeader title="Recherche de messages" />
+          <input
+            autoFocus
+            type="text"
+            placeholder="Rechercher dans la discussion..."
+            value={textSearch}
+            onChange={(e) => setTextSearch(e.target.value)}
+            style={{ width: "100%", margin: "8px 0 16px 0", padding: 8, borderRadius: 8, border: "1px solid #ccc", fontSize: 15 }}
+          />
+          <div className="det-file-list">
+            {textSearch.trim() ? (
+              messages
+                .filter(m => m.text?.toLowerCase().includes(textSearch.toLowerCase()))
+                .map((m, i) => (
+                  <div key={i} className="det-file-item" style={{ flexDirection: "column", alignItems: "flex-start", gap: 6, cursor: "default" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", width: "100%", fontSize: 12, opacity: 0.7 }}>
+                      <strong>{m.senderName}</strong>
+                      <span>{formatDate(m.createdAt)}</span>
+                    </div>
+                    <p style={{ margin: 0, fontSize: 14 }}>{m.text}</p>
+                  </div>
+                ))
+            ) : (
+              <p style={{ textAlign: "center", opacity: 0.5, marginTop: 20 }}>Tapez un mot-clé...</p>
+            )}
+          </div>
+        </>
+      )}
 
-  if (isGroupChat) {
-    return (
-      <div className={`Details ${darkMode ? "dark" : ""}`}>
-        <GroupSettings />
-      </div>
-    );
-  }
-
-  return (
-    <div className={`Details ${darkMode ? "dark" : ""}`}>
-      {/* ── Profile Header ── */}
-      <div className="det-hero">
+      {/* ─── MAIN VIEW ─── */}
+      {!section && (
+        <>
+          {isGroupChat ? (
+            <GroupSettings />
+          ) : (
+            <>
+              {/* ── Profile Header ── */}
+              <div className="det-hero">
         <div className="det-avatar-ring">
           <img src={displayAvatar} alt="" className="det-avatar" />
           {isMuted && (
@@ -534,7 +565,7 @@ const Details = () => {
             <button
               className="det-action-circle"
               onClick={() => {
-                /* Future search */
+                setSection("search");
               }}
             >
               <div
@@ -667,6 +698,10 @@ const Details = () => {
       </div>
 
       <div className="det-section-spacer" style={{ height: "40px" }} />
+            </>
+          )}
+        </>
+      )}
     </div>
   );
 };

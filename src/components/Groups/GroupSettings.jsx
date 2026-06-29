@@ -330,7 +330,8 @@ const GroupSettings = () => {
   const handleAddMembers = async () => {
     if (!groupData?.id) return;
 
-    if (!isOwner) {
+    const canInvite = isOwner || groupData?.settings?.membersCanInvite !== false;
+    if (!canInvite) {
       toast.error("Seul l'administrateur peut ajouter des membres.");
       return;
     }
@@ -780,7 +781,7 @@ const GroupSettings = () => {
             <span className="det-item-text">Membres</span>
             <span className="det-item-subtext">{members.length}</span>
           </div>
-          {isOwner && (
+          {(isOwner || groupData?.settings?.membersCanInvite !== false) && (
             <button
               className="det-action-circle"
               style={{

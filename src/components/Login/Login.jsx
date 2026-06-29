@@ -82,7 +82,7 @@ const GoogleLogo = () => (
    MAIN LOGIN COMPONENT
 ═══════════════════════════════════════════════════════════ */
 const Login = () => {
-  /* mode: "login" | "register-1" | "register-2" | "verify" */
+  /* mode: "login" | "register-1" | "register-2" | "register-3" | "verify" */
   const [mode, setMode] = useState("login");
   const [loading, setLoading] = useState(false);
 
@@ -105,6 +105,10 @@ const Login = () => {
   const [cardFile, setCardFile] = useState(null);
   const [cardPreview, setCardPreview] = useState("");
   const cardRef = useRef(null);
+
+  /* Register Step-3 */
+  const [plan, setPlan] = useState("free");
+  const [billingCycle, setBillingCycle] = useState("monthly");
 
   /* Verify */
   const [pendingUser, setPendingUser] = useState(null);
@@ -140,13 +144,16 @@ const Login = () => {
           email: user.email,
           avatar: user.photoURL || "",
           role: "student",
+          plan: "free",
+          emailVerified: true,
           createdAt: new Date(),
         });
         await setDoc(doc(db, "userschats", user.uid), { chats: [] });
       }
       toast.success("Connexion Google réussie");
-    } catch {
-      toast.error("Erreur Google OAuth");
+    } catch (err) {
+      console.error("Google OAuth Error:", err);
+      toast.error("Erreur Google OAuth: " + (err.message || err));
     } finally {
       setLoading(false);
     }
@@ -161,10 +168,16 @@ const Login = () => {
     setMode("register-2");
   };
 
-  /* ── Register final ── */
-  const handleRegister = async (e) => {
+  /* ── Step 2 → 3 ── */
+  const handleStep2 = (e) => {
     e.preventDefault();
     if (!matricule || !university || !department || !specialty) return toast.warn("Remplissez tous les champs académiques");
+    setMode("register-3");
+  };
+
+  /* ── Register final (step 3) ── */
+  const handleRegister = async (e) => {
+    e.preventDefault();
     setLoading(true);
     try {
       const cred = await createUserWithEmailAndPassword(auth, regEmail, regPass);
@@ -188,16 +201,24 @@ const Login = () => {
         studentCard: cardUrl,
         avatar: "",
         role: "student",
+        plan,
+        billingCycle: plan === "pro" ? billingCycle : null,
+        paymentVerified: false,
         emailVerified: false,
         createdAt: new Date(),
       });
       await setDoc(doc(db, "userschats", user.uid), { chats: [] });
 
       /* Send Firebase email verification */
-      await sendEmailVerification(user);
+      try {
+        await sendEmailVerification(user);
+        toast.success("Compte créé — vérifiez votre email");
+      } catch (emailErr) {
+        console.error("Email verification sending failed:", emailErr);
+        toast.warn("Compte créé, mais l'envoi de l'email de vérification a échoué.");
+      }
       setPendingUser(user);
       setMode("verify");
-      toast.success("Compte créé — vérifiez votre email");
     } catch (err) {
       if (err.code === "auth/email-already-in-use") toast.error("Email déjà utilisé");
       else toast.error(err.message || "Erreur lors de l'inscription");
@@ -212,8 +233,9 @@ const Login = () => {
     try {
       await sendEmailVerification(pendingUser);
       toast.success("Email de vérification renvoyé");
-    } catch {
-      toast.error("Impossible de renvoyer l'email");
+    } catch (err) {
+      console.error("Resend email failed:", err);
+      toast.error("Impossible de renvoyer l'email: " + (err.message || err));
     }
   };
 
@@ -226,7 +248,7 @@ const Login = () => {
   };
 
   /* ── Rendering helpers ── */
-  const stepLabel = mode === "register-2" ? "2 / 2" : "1 / 2";
+  const stepLabel = mode === "register-1" ? "1 / 3" : mode === "register-2" ? "2 / 3" : "3 / 3";
 
   return (
     <div className="lg-root">
@@ -296,6 +318,7 @@ const Login = () => {
               <div className="lg-steps">
                 <span className="lg-step lg-step--active" />
                 <span className="lg-step" />
+                <span className="lg-step" />
               </div>
               <h1 className="lg-title">Créer un compte</h1>
               <p className="lg-sub">Informations personnelles · {stepLabel}</p>
@@ -338,12 +361,13 @@ const Login = () => {
               <div className="lg-steps">
                 <span className="lg-step lg-step--done" />
                 <span className="lg-step lg-step--active" />
+                <span className="lg-step" />
               </div>
               <h1 className="lg-title">Informations académiques</h1>
               <p className="lg-sub">Complétez votre profil étudiant · {stepLabel}</p>
             </div>
 
-            <form onSubmit={handleRegister} className="lg-form">
+            <form onSubmit={handleStep2} className="lg-form">
               <FloatInput id="r-mat" label="Matricule étudiant" value={matricule} onChange={(e) => setMatricule(e.target.value)} disabled={loading} required />
               <FloatSelect id="r-uni" label="Université" value={university} onChange={(e) => setUniversity(e.target.value)} options={ALGERIAN_UNIVERSITIES} disabled={loading} />
               <div className="lg-row">
@@ -376,12 +400,176 @@ const Login = () => {
                   Retour
                 </button>
                 <button type="submit" className="lg-btn-primary" disabled={loading}>
+                  {loading ? <span className="lg-spinner" /> : "Continuer"}
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: 8 }}>
+                    <line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" />
+                  </svg>
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
+
+        {/* ──────── REGISTER STEP 3 ──────── */}
+        {mode === "register-3" && (
+          <div className="lg-form-block">
+            <div className="lg-form-header">
+              <div className="lg-steps">
+                <span className="lg-step lg-step--done" />
+                <span className="lg-step lg-step--done" />
+                <span className="lg-step lg-step--active" />
+              </div>
+              <h1 className="lg-title">Choisissez votre formule</h1>
+              <p className="lg-sub">Plan · {stepLabel}</p>
+            </div>
+
+            <div className="lg-plan-cards">
+              {/* Free Plan */}
+              <div
+                className={`lg-plan-card ${plan === "free" ? "lg-plan-card--selected" : ""}`}
+                onClick={() => setPlan("free")}
+              >
+                <div className="lg-plan-header">
+                  <div className="lg-plan-icon">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#002147" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                      <path d="M2 17l10 5 10-5" />
+                      <path d="M2 12l10 5 10-5" />
+                    </svg>
+                  </div>
+                  <h3 className="lg-plan-name">Gratuit</h3>
+                </div>
+                <div className="lg-plan-price">
+                  <span className="lg-plan-amount">0</span>
+                  <span className="lg-plan-currency">DA</span>
+                </div>
+                <div className="lg-plan-period">/ mois</div>
+
+                <ul className="lg-plan-features">
+                  <li className="lg-plan-feature lg-plan-feature--included">
+                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#10b981" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                    Messagerie (Chat)
+                  </li>
+                  <li className="lg-plan-feature lg-plan-feature--included">
+                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#10b981" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                    Groupes
+                  </li>
+                  <li className="lg-plan-feature lg-plan-feature--included">
+                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#10b981" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                    Meet (Visio)
+                  </li>
+                  <li className="lg-plan-feature lg-plan-feature--excluded">
+                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#9ca3af" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+                    Cours
+                  </li>
+                  <li className="lg-plan-feature lg-plan-feature--excluded">
+                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#9ca3af" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+                    Assistant COGI
+                  </li>
+                </ul>
+
+                <div className="lg-plan-select-indicator">
+                  {plan === "free" && (
+                    <span className="lg-plan-check">
+                      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Pro Plan */}
+              <div
+                className={`lg-plan-card lg-plan-card--pro ${plan === "pro" ? "lg-plan-card--selected" : ""}`}
+                onClick={() => setPlan("pro")}
+              >
+                <div className="lg-plan-badge">Populaire</div>
+                <div className="lg-plan-header">
+                  <div className="lg-plan-icon lg-plan-icon--gold">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#C5A059" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                    </svg>
+                  </div>
+                  <h3 className="lg-plan-name">Pro</h3>
+                </div>
+                <div className="lg-plan-price">
+                  <span className="lg-plan-amount">{billingCycle === "yearly" ? "4 999" : "499"}</span>
+                  <span className="lg-plan-currency">DA</span>
+                </div>
+                <div className="lg-plan-period">/ {billingCycle === "yearly" ? "an" : "mois"}</div>
+                {billingCycle === "yearly" && <div className="lg-plan-discount">Économisez 17%</div>}
+
+                <ul className="lg-plan-features">
+                  <li className="lg-plan-feature lg-plan-feature--included">
+                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#10b981" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                    Tout du Gratuit
+                  </li>
+                  <li className="lg-plan-feature lg-plan-feature--included">
+                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#10b981" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                    Cours
+                  </li>
+                  <li className="lg-plan-feature lg-plan-feature--included">
+                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#10b981" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                    Assistant COGI
+                  </li>
+                  <li className="lg-plan-feature lg-plan-feature--included">
+                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#10b981" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                    Accès illimité
+                  </li>
+                  <li className="lg-plan-feature lg-plan-feature--included">
+                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#10b981" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                    Support prioritaire
+                  </li>
+                </ul>
+
+                <div className="lg-plan-select-indicator">
+                  {plan === "pro" && (
+                    <span className="lg-plan-check">
+                      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Billing toggle */}
+            <div className="lg-billing-toggle">
+              <span className={`lg-billing-label ${billingCycle === "monthly" ? "active" : ""}`}>Mensuel</span>
+              <label className="lg-toggle-switch">
+                <input
+                  type="checkbox"
+                  checked={billingCycle === "yearly"}
+                  onChange={() => setBillingCycle(billingCycle === "monthly" ? "yearly" : "monthly")}
+                />
+                <span className="lg-toggle-slider" />
+              </label>
+              <span className={`lg-billing-label ${billingCycle === "yearly" ? "active" : ""}`}>
+                Annuel
+                <span className="lg-billing-save">-17%</span>
+              </span>
+            </div>
+
+            <p className="lg-plan-note">
+              {plan === "pro"
+                ? "L'accès Pro sera activé après validation par l'administrateur."
+                : "Vous pourrez passer à Pro plus tard."}
+            </p>
+
+            <form onSubmit={handleRegister} className="lg-form">
+              <div className="lg-form-actions">
+                <button type="button" className="lg-btn-outline" onClick={() => setMode("register-2")} disabled={loading}>
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" />
+                  </svg>
+                  Retour
+                </button>
+                <button type="submit" className="lg-btn-primary" disabled={loading}>
                   {loading ? <span className="lg-spinner" /> : "Créer mon compte"}
                 </button>
               </div>
             </form>
           </div>
         )}
+
         </div>
       </div>
     </div>

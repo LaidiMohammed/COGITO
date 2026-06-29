@@ -326,3 +326,266 @@
 .lg-verify .lg-verify-icon svg rect {
   stroke: #002147;
 }
+
+/* ═══════════════════════════════════════════════════════════
+   PLAN SELECTION (Step 3)
+════════════════════════════════════════════════════════════ */
+
+/* ── Cards container ──────────────────────────────────────── */
+.lg-plan-cards {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+/* ── Individual plan card ─────────────────────────────────── */
+.lg-plan-card {
+  flex: 1;
+  position: relative;
+  background: #f7f9fc;
+  border: 1.5px solid #dde4ee;
+  border-radius: 14px;
+  padding: 20px 16px 16px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  overflow: hidden;
+}
+.lg-plan-card:hover {
+  border-color: #C5A059;
+  background: #fff;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 28px rgba(0, 33, 71, 0.1);
+}
+.lg-plan-card--selected {
+  border-color: #C5A059;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(197, 160, 89, 0.15), 0 8px 28px rgba(0, 33, 71, 0.1);
+  transform: translateY(-3px);
+}
+
+/* ── Pro specific ─────────────────────────────────────────── */
+.lg-plan-card--pro {
+  background: linear-gradient(180deg, #faf8f4 0%, #f7f9fc 100%);
+}
+.lg-plan-card--pro.lg-plan-card--selected {
+  background: #fff;
+}
+
+/* ── "Populaire" badge ────────────────────────────────────── */
+.lg-plan-badge {
+  position: absolute;
+  top: 10px;
+  right: -28px;
+  background: linear-gradient(135deg, #C5A059, #a87f38);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  padding: 3px 32px;
+  transform: rotate(45deg);
+  box-shadow: 0 2px 6px rgba(197, 160, 89, 0.3);
+}
+
+/* ── Card header (icon + name) ────────────────────────────── */
+.lg-plan-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.lg-plan-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #e8edf3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.25s;
+}
+.lg-plan-card--selected .lg-plan-icon {
+  background: rgba(197, 160, 89, 0.12);
+}
+.lg-plan-icon--gold {
+  background: rgba(197, 160, 89, 0.12);
+}
+.lg-plan-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: #002147;
+  margin: 0;
+}
+
+/* ── Price ────────────────────────────────────────────────── */
+.lg-plan-price {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 2px;
+  margin-bottom: 2px;
+}
+.lg-plan-amount {
+  font-size: 30px;
+  font-weight: 800;
+  color: #002147;
+  letter-spacing: -1px;
+  line-height: 1;
+}
+.lg-plan-currency {
+  font-size: 15px;
+  font-weight: 700;
+  color: #C5A059;
+}
+.lg-plan-period {
+  font-size: 12px;
+  color: #9aadc4;
+  margin-bottom: 12px;
+}
+.lg-plan-discount {
+  display: inline-block;
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 10px;
+  border-radius: 20px;
+  margin-bottom: 10px;
+}
+
+/* ── Feature list ─────────────────────────────────────────── */
+.lg-plan-features {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.lg-plan-feature {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: #5a7299;
+  font-weight: 500;
+  text-align: left;
+  padding: 0 4px;
+}
+.lg-plan-feature svg {
+  flex-shrink: 0;
+}
+.lg-plan-feature--included {
+  color: #1e293b;
+}
+.lg-plan-feature--excluded {
+  color: #b0bcca;
+}
+
+/* ── Select indicator (check circle) ──────────────────────── */
+.lg-plan-select-indicator {
+  margin-top: 14px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.lg-plan-check {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #C5A059;
+  animation: lg-plan-check-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@keyframes lg-plan-check-in {
+  from { transform: scale(0); }
+  to   { transform: scale(1); }
+}
+
+/* ── Billing toggle (yearly / monthly) ────────────────────── */
+.lg-billing-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.lg-billing-label {
+  font-size: 13px;
+  color: #9aadc4;
+  font-weight: 500;
+  transition: color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.lg-billing-label.active {
+  color: #002147;
+  font-weight: 700;
+}
+.lg-billing-save {
+  font-size: 10px;
+  background: rgba(16, 185, 129, 0.12);
+  color: #10b981;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: 10px;
+}
+
+/* ── Toggle switch ────────────────────────────────────────── */
+.lg-toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 42px;
+  height: 24px;
+  cursor: pointer;
+}
+.lg-toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.lg-toggle-slider {
+  position: absolute;
+  inset: 0;
+  background: #dde4ee;
+  border-radius: 24px;
+  transition: background 0.25s;
+}
+.lg-toggle-slider::before {
+  content: "";
+  position: absolute;
+  left: 3px;
+  top: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+}
+.lg-toggle-switch input:checked + .lg-toggle-slider {
+  background: #C5A059;
+}
+.lg-toggle-switch input:checked + .lg-toggle-slider::before {
+  transform: translateX(18px);
+}
+
+/* ── Plan info note ───────────────────────────────────────── */
+.lg-plan-note {
+  font-size: 12px;
+  color: #9aadc4;
+  text-align: center;
+  margin-bottom: 16px;
+  line-height: 1.5;
+  padding: 0 10px;
+}

@@ -155,7 +155,8 @@ const Groups = ({ setPage }) => {
 
   const handleAddMembers = async (groupToUpdate) => {
     // Seul l'admin a la permission d'ajouter des membres
-    if (groupToUpdate.adminId !== currentUser?.id) {
+    const canInvite = groupToUpdate.adminId === currentUser?.id || groupToUpdate.settings?.membersCanInvite !== false;
+    if (!canInvite) {
       toast.error("Seul l'administrateur peut ajouter des membres.");
       return;
     }
@@ -443,7 +444,7 @@ const Groups = ({ setPage }) => {
               : "Épingler l'Espace"}
           </button>
 
-          {contextMenu.group.adminId === currentUser?.id && (
+          {(contextMenu.group.adminId === currentUser?.id || contextMenu.group.settings?.membersCanInvite !== false) && (
             <button
               className="context-menu-item"
               onClick={() => {

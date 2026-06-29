@@ -1,81 +1,45 @@
 import "./Navbar.css";
 import { useChatStore } from "../../lib/chatStore";
+import { useUserStore } from "../../lib/userStore";
+import { MessageCircle, Users, Video, BookOpen, Bot, Settings, ShieldCheck, Crown } from "lucide-react";
 
-const ShieldIcon = () => (
-  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-  </svg>
-);
+const NAV_ITEMS = [
+  { key: "chat", icon: MessageCircle, label: "Chat" },
+  { key: "groups", icon: Users, label: "Groups" },
+  { key: "meet", icon: Video, label: "Meet" },
+  { key: "cours", icon: BookOpen, label: "Cours" },
+  { key: "cogi", icon: Bot, label: "Cogi IA" },
+];
 
 const Navbar = ({ setPage, active, onOpenAdmin }) => {
   const { toggleSettings } = useChatStore();
+  const { currentUser } = useUserStore();
 
   return (
     <div className="navbar">
-      {/* LEFT LOGO */}
       <div className="nav-left">
-        <video
-          src="/image/logo.mp4"
-          className="logo"
-          autoPlay
-          loop
-          muted
-          playsInline
-        />
+        <img src="/image/logo.png" alt="Cogito" className="logo" onClick={() => setPage("home")} />
       </div>
 
-      {/* CENTER MENU */}
       <ul className="nav-menu">
-        <li
-          className={active === "chat" ? "active" : ""}
-          onClick={() => setPage("chat")}
-        >
-          Chat
-        </li>
-        <li
-          className={active === "groups" ? "active" : ""}
-          onClick={() => setPage("groups")}
-        >
-          Groups
-        </li>
-        <li
-          className={active === "meet" ? "active" : ""}
-          onClick={() => setPage("meet")}
-        >
-          Meet
-        </li>
-        <li
-          className={active === "cours" ? "active" : ""}
-          onClick={() => setPage("cours")}
-        >
-          Cours
-        </li>
-        <li
-          className={active === "cogi" ? "active" : ""}
-          onClick={() => setPage("cogi")}
-        >
-          Cogi IA
-        </li>
+        {NAV_ITEMS.map(({ key, icon: Icon, label }) => (
+          <li key={key} className={active === key ? "active" : ""} onClick={() => setPage(key)}>
+            <Icon size={20} />
+            <span>{label}</span>
+          </li>
+        ))}
       </ul>
 
-      {/* RIGHT ICONS */}
       <div className="nav-right">
+        {currentUser?.plan === "pro" && <Crown size={16} className="nav-pro-icon" title="Compte Pro" />}
         {onOpenAdmin && (
-          <button
-            className="nav-admin-btn"
-            onClick={onOpenAdmin}
-            title="Panneau Administrateur"
-          >
-            <ShieldIcon />
-            <span>Admin</span>
+          <button className="nav-admin-btn" onClick={onOpenAdmin} title="Administrateur">
+            <ShieldCheck size={18} />
           </button>
         )}
-        <img
-          src="/image/parametre.png"
-          className="parametre"
-          onClick={toggleSettings}
-          title="Paramètres"
-        />
+        <button className="nav-settings-btn" onClick={toggleSettings} title="Paramètres">
+          <Settings size={20} />
+        </button>
       </div>
     </div>
   );

@@ -46,11 +46,20 @@
   color: #002147;
 }
 
-/* ===== RECHERCHE ===== */
-.Chatliste .Recherche {
+.chatliste-header-sticky {
   position: sticky;
   top: 0;
   z-index: 10;
+  background: #fff;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+.container.dark .chatliste-header-sticky {
+  background: #0f172a;
+  border-bottom-color: rgba(255, 255, 255, 0.05);
+}
+
+/* ===== RECHERCHE ===== */
+.Chatliste .Recherche {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -217,6 +226,15 @@
   pointer-events: none;
   transition: background 0.2s;
 }
+
+/* If the badge has no number, make it a simple small dot */
+.notif-badge:empty {
+  min-width: 14px;
+  height: 14px;
+  top: 0;
+  right: 0;
+  border: 2px solid #fff; /* Keeps the nice cutout effect */
+}
 .badge-animated {
   animation: badgePopIn 0.32s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -295,6 +313,13 @@
   color: #1a2a4a;
   font-weight: 500;
   transition: background 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.context-item svg {
+  flex-shrink: 0;
 }
 
 .context-item:hover {
