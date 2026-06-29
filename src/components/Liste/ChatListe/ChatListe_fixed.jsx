@@ -6,7 +6,7 @@ import { useUserStore } from "../../../lib/userStore";
 import { doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { db } from "../../../lib/firebase";
 import { useChatStore } from "../../../lib/chatStore";
-import { VolumeX } from "lucide-react";
+import { VolumeX, Pin, BellOff, Bell, Trash2 } from "lucide-react";
 import { resolveAvatar } from "../../../lib/media";
 
 const EMPTY_USER = {
@@ -221,7 +221,7 @@ const ChatListe = () => {
                   <span>
                     {isBlocked ? "User" : chat.pseudo || chat.user?.username}
                   </span>
-                  {chat.pinned && <span className="pin-icon">📌</span>}
+                  {chat.pinned && <span className="pin-icon"><Pin size={14} /></span>}
                   {mutedChats?.[chat.chatId] && (
                     <span className="mute-icon" title="En sourdine">
                       <VolumeX size={12} color="#8b5cf6" />
@@ -245,15 +245,23 @@ const ChatListe = () => {
           ref={menuRef}
         >
           <div className="context-item" onClick={handlePin}>
-            📌 {contextMenu.chat?.pinned ? "Désépingler" : "Épingler"}
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+              <Pin size={14} />
+              {contextMenu.chat?.pinned ? "Désépingler" : "Épingler"}
+            </span>
           </div>
           <div className="context-item" onClick={handleMuteContext}>
-            {mutedChats?.[contextMenu.chat?.chatId]
-              ? "🔔 Réactiver"
-              : "🔇 Sourdine"}
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+              {mutedChats?.[contextMenu.chat?.chatId]
+                ? <><Bell size={14} /> Réactiver</>
+                : <><BellOff size={14} /> Sourdine</>}
+            </span>
           </div>
           <div className="context-item delete" onClick={handleDelete}>
-            🗑️ Supprimer
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+              <Trash2 size={14} />
+              Supprimer
+            </span>
           </div>
         </div>
       )}

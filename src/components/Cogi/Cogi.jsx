@@ -6,6 +6,7 @@ import {
   generateImageFromText,
 } from "../../lib/generator";
 import { downloadFile } from "../../lib/chatMessage";
+import { Image, XCircle } from "lucide-react";
 
 /* ─── System Prompt ────────────────────────────────────────── */
 const SYSTEM_PROMPT = `Tu es l'assistant IA central de la plateforme COGITO — un assistant universel de niveau Gemini, bilingue français/anglais.
@@ -161,13 +162,13 @@ const LegacyImgBubble = ({ prompt, desc, onShare }) => {
   return (
     <div className="cogi-img-bubble">
       <div className="cogi-doc-header">
-        <span className="cogi-doc-icon">🖼️</span>
+        <Image className="cogi-doc-icon" />
         <strong>Image générée</strong>
       </div>
       <p className="cogi-img-desc">{desc}</p>
       
       {loading && !error && <div className="cogi-img-loading"><TypingBubble /></div>}
-      {error && <p className="cogi-img-error">❌ Impossible de générer l'image. (Le serveur IA est surchargé)</p>}
+      {error && <p className="cogi-img-error"><XCircle size={16} style={{ verticalAlign: "middle", marginRight: 4 }} /> Impossible de générer l'image. (Le serveur IA est surchargé)</p>}
       
       {!error && (
         <a href={finalUrl} target="_blank" rel="noopener noreferrer" style={{ display: loading ? "none" : "block" }}>

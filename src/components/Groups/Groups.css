@@ -691,12 +691,17 @@ select:focus {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 6px;
   background: rgba(0, 33, 71, 0.04);
   color: var(--text-sec);
   font-size: 11px;
   font-weight: 600;
   text-align: center;
   border-radius: 50%;
+  transition: background 0.2s, color 0.2s;
+}
+.group-img-picker:hover .group-img-placeholder {
+  background: rgba(0, 33, 71, 0.08);
+  color: var(--text-pri);
 }
 

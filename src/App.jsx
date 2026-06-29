@@ -15,6 +15,7 @@ import { auth } from "./lib/firebase";
 import { useEffect, useState } from "react";
 import { useUserStore } from "./lib/userStore";
 import { useChatStore } from "./lib/chatStore";
+import { Ban } from "lucide-react";
 
 const App = () => {
   const { currentUser, isLoading, fetchUserInfo, setUser } = useUserStore();
@@ -42,7 +43,7 @@ const App = () => {
           border: "1px solid rgba(239,68,68,0.4)",
           borderRadius: 16, padding: "40px 60px", textAlign: "center", maxWidth: 460,
         }}>
-          <div style={{ fontSize: 48, marginBottom: 16 }}>🚫</div>
+          <Ban size={48} style={{ color: "#ef4444", marginBottom: 16 }} />
           <h2 style={{ color: "#ef4444", fontFamily: "Poppins", marginBottom: 8 }}>Compte suspendu</h2>
           <p style={{ color: "#94a3b8", fontSize: 14 }}>
             Votre compte a été suspendu par un administrateur. Contactez le support.

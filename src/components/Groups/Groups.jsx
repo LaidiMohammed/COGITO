@@ -27,6 +27,7 @@ import {
   Trash2,
   LogOut,
   UserPlus,
+  Camera,
 } from "lucide-react";
 import { db } from "../../lib/firebase";
 import { useUserStore } from "../../lib/userStore";
@@ -502,7 +503,7 @@ const Groups = ({ setPage }) => {
                     <img src={groupImgPreview} alt="Aperçu" className="group-img-preview" />
                   ) : (
                     <div className="group-img-placeholder">
-                      <span style={{ fontSize: 32 }}>📷</span>
+                      <Camera size={28} />
                       <span>Photo du groupe</span>
                     </div>
                   )}

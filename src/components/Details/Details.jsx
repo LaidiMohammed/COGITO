@@ -31,6 +31,7 @@ import {
   Trash2,
   Volume2,
   VolumeX,
+  Pin,
 } from "lucide-react";
 import { resolveAvatar } from "../../lib/media";
 import { downloadFile, getDocumentName } from "../../lib/chatMessage";
@@ -658,7 +659,7 @@ const Details = () => {
             }}
             className="det-item-icon-left"
           >
-            📌
+            <Pin size={18} />
           </span>
           <span className="det-item-text">
             {isPinned ? "Désépingler la discussion" : "Épingler la discussion"}
