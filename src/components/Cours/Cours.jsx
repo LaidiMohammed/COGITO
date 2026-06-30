@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "./Cours.css";
-import Settings from "../settings/settings";
+import Settings from "../Settings/Settings";
 import { useChatStore } from "../../lib/chatStore";
 
 const Cours = () => {
