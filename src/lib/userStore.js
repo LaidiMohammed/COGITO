@@ -24,15 +24,47 @@ export const useUserStore = create((set) => ({
           isLoading: false,
         });
       } else {
-        // Create minimal user doc
         await setDoc(doc(db, "users", uid), {
           id: uid,
+          username: auth.currentUser?.displayName || auth.currentUser?.email || "Utilisateur",
+          email: auth.currentUser?.email || "",
+          avatar: auth.currentUser?.photoURL || "",
+          role: "student",
+          plan: "free",
           blocked: [],
         });
-        set({ currentUser: { id: uid, blocked: [] }, isLoading: false });
+        set({
+          currentUser: {
+            id: uid,
+            username: auth.currentUser?.displayName || auth.currentUser?.email || "Utilisateur",
+            email: auth.currentUser?.email || "",
+            avatar: auth.currentUser?.photoURL || "",
+            role: "student",
+            plan: "free",
+            blocked: [],
+          },
+          isLoading: false,
+        });
       }
     } catch (err) {
-      set({ currentUser: null, isLoading: false });
+      console.error("fetchUserInfo error:", err);
+      const fallback = auth.currentUser;
+      if (fallback) {
+        set({
+          currentUser: {
+            id: fallback.uid,
+            username: fallback.displayName || fallback.email || "Utilisateur",
+            email: fallback.email || "",
+            avatar: fallback.photoURL || "",
+            role: "student",
+            plan: "free",
+            blocked: [],
+          },
+          isLoading: false,
+        });
+      } else {
+        set({ currentUser: null, isLoading: false });
+      }
     }
   },
   setUser: (user) => set({ currentUser: user }),
