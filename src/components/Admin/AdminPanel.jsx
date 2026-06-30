@@ -9,6 +9,7 @@ import {
   PieChart, Pie, Cell, Legend,
 } from "recharts";
 import "./AdminPanel.css";
+import AdminOffers from "./AdminOffers";
 
 /* ── Icons ─────────────────────────────────────────────── */
 const I = (d, vb = "0 0 24 24") => (
@@ -180,6 +181,7 @@ const AdminPanel = ({ onClose }) => {
     { id: "groups", label: "Groupes" },
     { id: "meets", label: "Réunions" },
     { id: "jobs", label: "Jobs" },
+    { id: "offers", label: "Offres" },
     { id: "permissions", label: "Permissions" },
   ];
 
@@ -519,6 +521,9 @@ const AdminPanel = ({ onClose }) => {
                 </div>
               </div>
             )}
+
+            {/* ── OFFERS (AdminOffers) ── */}
+            {tab === "offers" && <AdminOffers />}
 
             {/* ── PERMISSIONS ── */}
             {tab === "permissions" && (
