@@ -1,7 +1,7 @@
 import "./Navbar.css";
 import { useChatStore } from "../../lib/chatStore";
 import { useUserStore } from "../../lib/userStore";
-import { MessageCircle, Users, Video, BookOpen, Bot, Settings, ShieldCheck, Crown } from "lucide-react";
+import { MessageCircle, Users, Video, BookOpen, Bot, Briefcase, Info, Settings, ShieldCheck, Crown } from "lucide-react";
 
 const NAV_ITEMS = [
   { key: "chat", icon: MessageCircle, label: "Chat" },
@@ -9,6 +9,8 @@ const NAV_ITEMS = [
   { key: "meet", icon: Video, label: "Meet" },
   { key: "cours", icon: BookOpen, label: "Cours" },
   { key: "cogi", icon: Bot, label: "Cogi IA" },
+  { key: "jobs", icon: Briefcase, label: "Job Étudiant" },
+  { key: "about", icon: Info, label: "About Us" },
 ];
 
 const Navbar = ({ setPage, active, onOpenAdmin }) => {
@@ -18,7 +20,7 @@ const Navbar = ({ setPage, active, onOpenAdmin }) => {
   return (
     <div className="navbar">
       <div className="nav-left">
-        <img src="/image/logo.png" alt="Cogito" className="logo" onClick={() => setPage("home")} />
+        <img src={`${import.meta.env.BASE_URL}image/logo.png`} alt="Cogito" className="logo" onClick={() => setPage("home")} />
       </div>
 
       <ul className="nav-menu">

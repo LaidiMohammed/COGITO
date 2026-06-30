@@ -60,7 +60,7 @@ const Welcome = ({ setPage }) => {
       <section className="welcome-hero">
         <div className="welcome-hero-bg" style={{ transform: `scale(${1 + scrollY * 0.0006}) translateY(${scrollY * 0.15}px)` }} />
         <div className="welcome-hero-content" style={{ opacity: Math.max(0, 1 - scrollY * 0.002) }}>
-          <img src="/image/logo.png" alt="Cogito" className="welcome-logo" />
+          <img src={`${import.meta.env.BASE_URL}image/logo.png`} alt="Cogito" className="welcome-logo" />
           <h1 className="welcome-title">Bienvenue sur <span>Cogito</span></h1>
           <p className="welcome-sub">
             La plateforme intelligente conçue pour les étudiants.<br />

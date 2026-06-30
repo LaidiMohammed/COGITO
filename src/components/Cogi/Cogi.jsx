@@ -83,7 +83,7 @@ const SUGGESTIONS = [
 /* ─── Typing indicator with favicon ────────────────────── */
 const TypingBubble = () => (
   <div className="cogi-typing-bubble">
-    <img src="/image/favicon.png" alt="Cogi" className="cogi-thinking-favicon" />
+    <img src={`${import.meta.env.BASE_URL}image/favicon.png`} alt="Cogi" className="cogi-thinking-favicon" />
     <span className="cogi-dot" style={{ animationDelay: "0s" }} />
     <span className="cogi-dot" style={{ animationDelay: "0.18s" }} />
     <span className="cogi-dot" style={{ animationDelay: "0.36s" }} />
@@ -610,7 +610,7 @@ const Cogi = () => {
     if (msg.isInfo) {
       return (
         <div key={i} className="cogi-message-wrap cogi-msg-ai">
-          <img src="/image/favicon.png" alt="Cogi" className="cogi-ai-avatar-img" />
+          <img src={`${import.meta.env.BASE_URL}image/favicon.png`} alt="Cogi" className="cogi-ai-avatar-img" />
           <div className="chat-bubble cogi-ai-bubble cogi-bubble-info"><p>{msg.content}</p></div>
         </div>
       );
@@ -618,7 +618,7 @@ const Cogi = () => {
     if (msg.isError) {
       return (
         <div key={i} className="cogi-message-wrap cogi-msg-ai">
-          <img src="/image/favicon.png" alt="Cogi" className="cogi-ai-avatar-img" />
+          <img src={`${import.meta.env.BASE_URL}image/favicon.png`} alt="Cogi" className="cogi-ai-avatar-img" />
           <div className="chat-bubble cogi-ai-bubble cogi-bubble-error"><p>{msg.content}</p></div>
         </div>
       );
@@ -630,7 +630,7 @@ const Cogi = () => {
     if (p.type === "doc") {
       return (
         <div key={i} className="cogi-message-wrap cogi-msg-ai">
-          <img src="/image/favicon.png" alt="Cogi" className="cogi-ai-avatar-img" />
+          <img src={`${import.meta.env.BASE_URL}image/favicon.png`} alt="Cogi" className="cogi-ai-avatar-img" />
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {p.prefix && (
               <div className="chat-bubble cogi-ai-bubble">
@@ -646,7 +646,7 @@ const Cogi = () => {
     if (p.type === "img") {
       return (
         <div key={i} className="cogi-message-wrap cogi-msg-ai">
-          <img src="/image/favicon.png" alt="Cogi" className="cogi-ai-avatar-img" />
+          <img src={`${import.meta.env.BASE_URL}image/favicon.png`} alt="Cogi" className="cogi-ai-avatar-img" />
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {p.prefix && (
               <div className="chat-bubble cogi-ai-bubble">
@@ -663,7 +663,7 @@ const Cogi = () => {
     // plain text
     return (
       <div key={i} className="cogi-message-wrap cogi-msg-ai" style={{ animationDelay: `${i * 0.02}s` }}>
-        <img src="/image/favicon.png" alt="Cogi" className="cogi-ai-avatar-img" />
+        <img src={`${import.meta.env.BASE_URL}image/favicon.png`} alt="Cogi" className="cogi-ai-avatar-img" />
         <div className="chat-bubble cogi-ai-bubble">
           <RenderMarkdown text={p.content} />
           <span className="chat-msg-time">{new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}</span>
@@ -706,7 +706,7 @@ const Cogi = () => {
     <div
       className="cogi-root"
       style={{
-        backgroundImage: darkMode ? "url('/darke.png')" : "url('/backround.png')",
+        backgroundImage: darkMode ? `url('${import.meta.env.BASE_URL}darke.png')` : `url('${import.meta.env.BASE_URL}backround.png')`,
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
@@ -767,7 +767,7 @@ const Cogi = () => {
 
         {isLoading && (
           <div className="cogi-message-wrap cogi-msg-ai">
-            <img src="/image/favicon.png" alt="Cogi" className="cogi-ai-avatar-img" />
+            <img src={`${import.meta.env.BASE_URL}image/favicon.png`} alt="Cogi" className="cogi-ai-avatar-img" />
             <TypingBubble />
           </div>
         )}

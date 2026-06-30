@@ -49,7 +49,7 @@ const DemoPage = () => {
       >
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <img
-            src="/logo_cogito.png"
+            src={`${import.meta.env.BASE_URL}logo_cogito.png`}
             alt="COGITO"
             style={{ height: 32 }}
             onError={(e) => {

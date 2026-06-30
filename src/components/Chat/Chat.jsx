@@ -1116,8 +1116,8 @@ const Chat = () => {
       className="Chat"
       style={{
         backgroundImage: darkMode
-          ? "url('/darke.png')"
-          : "url('/backround.png')",
+          ? `url('${import.meta.env.BASE_URL}darke.png')`
+          : `url('${import.meta.env.BASE_URL}backround.png')`,
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}

@@ -11,7 +11,7 @@
   justify-content: flex-end; /* Push panel to right */
   font-family: "Inter", -apple-system, sans-serif;
   overflow: hidden;
-  background-image: url('/brlogin.png');
+  background-image: url('../../../public/brlogin.png');
   background-size: cover; /* Keeps aspect ratio perfect */
   background-position: center;
   background-repeat: no-repeat;

@@ -65,7 +65,7 @@ const App = () => {
   if (isLoading) {
     return (
       <div className="loading-video-overlay">
-        <video src="/image/loading.mp4" autoPlay loop muted playsInline className="loading-video" />
+        <video src={`${import.meta.env.BASE_URL}image/loading.mp4`} autoPlay loop muted playsInline className="loading-video" />
       </div>
     );
   }
@@ -87,6 +87,8 @@ const App = () => {
               {page === "meet" && <Meet />}
               {page === "cours" && <Cours />}
               {page === "cogi" && <Cogi />}
+              {page === "jobs" && <div className="page-placeholder"><h2>Jobs Étudiants</h2><p>Page à venir...</p></div>}
+              {page === "about" && <div className="page-placeholder"><h2>About Us</h2><p>Page à venir...</p></div>}
             </div>
 
             <Settings
