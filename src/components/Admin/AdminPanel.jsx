@@ -69,9 +69,11 @@ const AdminPanel = ({ onClose }) => {
   const [users, setUsers] = useState([]);
   const [groups, setGroups] = useState([]);
   const [meetings, setMeetings] = useState([]);
+  const [jobs, setJobs] = useState([]);
   const [searchUser, setSearchUser] = useState("");
   const [searchGroup, setSearchGroup] = useState("");
-  const [timeScale, setTimeScale] = useState("day"); // day | month
+  const [searchJob, setSearchJob] = useState("");
+  const [timeScale, setTimeScale] = useState("day");
   const [selectedGroup, setSelectedGroup] = useState(null);
 
   useEffect(() => {
@@ -92,6 +94,13 @@ const AdminPanel = ({ onClose }) => {
     const q = query(collection(db, "meetings"), orderBy("date", "desc"));
     const unsub = onSnapshot(q, (s) =>
       setMeetings(s.docs.map((d) => ({ id: d.id, ...d.data() })))
+    );
+    return unsub;
+  }, []);
+
+  useEffect(() => {
+    const unsub = onSnapshot(collection(db, "jobs"), (s) =>
+      setJobs(s.docs.map((d) => ({ id: d.id, ...d.data() })))
     );
     return unsub;
   }, []);
@@ -146,11 +155,19 @@ const AdminPanel = ({ onClose }) => {
     await deleteDoc(doc(db, "meetings", m.id));
   };
 
+  const deleteJob = async (j) => {
+    if (!window.confirm(`Supprimer l'offre "${j.title}" ?`)) return;
+    await deleteDoc(doc(db, "jobs", j.id));
+  };
+
   const filteredUsers = users.filter((u) =>
     (u.username || u.email || "").toLowerCase().includes(searchUser.toLowerCase())
   );
   const filteredGroups = groups.filter((g) =>
     (g.groupName || "").toLowerCase().includes(searchGroup.toLowerCase())
+  );
+  const filteredJobs = jobs.filter((j) =>
+    (j.title || "").toLowerCase().includes(searchJob.toLowerCase())
   );
   const activeUsers = users.filter((u) => !u.banned).length;
   const bannedUsers = users.filter((u) => u.banned).length;
@@ -162,6 +179,7 @@ const AdminPanel = ({ onClose }) => {
     { id: "users", label: "Utilisateurs" },
     { id: "groups", label: "Groupes" },
     { id: "meets", label: "Réunions" },
+    { id: "jobs", label: "Jobs" },
     { id: "permissions", label: "Permissions" },
   ];
 
@@ -208,6 +226,7 @@ const AdminPanel = ({ onClose }) => {
                   {[
                     { label: "Total Utilisateurs", value: users.length, sub: `Actifs: ${activeUsers} | Bannis: ${bannedUsers}`, color: "#3b82f6" },
                     { label: "Groupes", value: groups.length, sub: "Espaces de collaboration", color: "#10b981" },
+                    { label: "Offres", value: jobs.length, sub: "Jobs étudiants", color: "#f59e0b" },
                     { label: "Réunions", value: meetings.length, sub: "Sessions vidéo", color: "#8b5cf6" },
                     { label: "Système", value: "Optimal", sub: "Tous services actifs", color: "#C5A059" },
                   ].map((s) => (
@@ -431,6 +450,47 @@ const AdminPanel = ({ onClose }) => {
                           <td>{m.creatorName || "Inconnu"}</td>
                           <td>
                             <button className="ap-btn ap-btn-red" onClick={() => deleteMeet(m)}>Supprimer</button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {/* ── JOBS ── */}
+            {tab === "jobs" && (
+              <div className="ap-section">
+                <div className="ap-search-bar">
+                  <input placeholder="Rechercher une offre…" value={searchJob} onChange={(e) => setSearchJob(e.target.value)} />
+                  <span className="ap-count">{filteredJobs.length} offre(s)</span>
+                </div>
+                <div className="ap-table-wrap">
+                  <table className="ap-table">
+                    <thead><tr><th>Titre</th><th>Catégorie</th><th>Employeur</th><th>Candidats</th><th>Statut</th><th>Actions</th></tr></thead>
+                    <tbody>
+                      {filteredJobs.length === 0 && <tr><td colSpan={6} className="ap-empty">Aucune offre.</td></tr>}
+                      {filteredJobs.map((j) => (
+                        <tr key={j.id}>
+                          <td><strong>{j.title}</strong></td>
+                          <td><span className="ap-badge ap-badge-user">{j.category}</span></td>
+                          <td><small>{j.employerName || "—"}</small></td>
+                          <td>{j.applicants?.length || 0}</td>
+                          <td>
+                            <span className={`ap-badge ${j.status === "open" ? "ap-badge-active" : "ap-badge-banned"}`}>
+                              {j.status === "open" ? "Ouvert" : "Fermé"}
+                            </span>
+                          </td>
+                          <td>
+                            <div className="ap-actions">
+                              <button className="ap-btn ap-btn-gold" onClick={() => updateDoc(doc(db, "jobs", j.id), {
+                                status: j.status === "open" ? "closed" : "open"
+                              })}>
+                                {j.status === "open" ? "Fermer" : "Ouvrir"}
+                              </button>
+                              <button className="ap-btn ap-btn-red" onClick={() => deleteJob(j)}>Supprimer</button>
+                            </div>
                           </td>
                         </tr>
                       ))}
