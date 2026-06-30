@@ -1,6 +1,6 @@
 import Login from "./components/Login/Login";
 import Navbar from "./components/Navbar/Navbar";
-import Notification from "./components/Notification/notification";
+import Notification from "./components/Notification/Notification";
 import Welcome from "./components/Welcome/Welcome";
 import Groups from "./components/Groups/Groups";
 import Meet from "./components/Meet/Meet";
