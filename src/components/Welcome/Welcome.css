@@ -335,6 +335,59 @@
 }
 .welcome-footer p { font-size: 12px; color: #9aadc4; margin: 0; }
 
+/* ══ Logo Banner ══════════════════════════════════════════ */
+.logo-banner {
+  overflow: hidden;
+  padding: 40px 0 20px;
+  background: linear-gradient(180deg, transparent, rgba(197,160,89,0.03));
+}
+
+.logo-banner-track {
+  display: flex;
+  gap: 60px;
+  margin-bottom: 24px;
+}
+
+.logo-banner-group {
+  display: flex;
+  align-items: center;
+  gap: 60px;
+}
+
+.logo-banner-track-1 .logo-banner-group {
+  animation: logoScroll 35s linear infinite;
+}
+
+.logo-banner-track-2 .logo-banner-group {
+  animation: logoScrollReverse 40s linear infinite;
+}
+
+.logo-banner-group img {
+  height: 36px;
+  max-width: 120px;
+  object-fit: contain;
+  opacity: 0.45;
+  filter: grayscale(0.6);
+  transition: all 0.4s ease;
+  flex-shrink: 0;
+}
+
+.logo-banner-group img:hover {
+  opacity: 0.85;
+  filter: grayscale(0);
+  transform: scale(1.08);
+}
+
+@keyframes logoScroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes logoScrollReverse {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+
 /* ══ Dark mode ═══════════════════════════════════════════ */
 .container.dark .welcome-title { color: #e2e8f0; }
 .container.dark .welcome-sub { color: #64748b; }
@@ -412,6 +465,12 @@
 .container.dark .welcome-stat-label { color: #64748b; }
 .container.dark .welcome-footer { border-color: rgba(255,255,255,0.04); }
 .container.dark .welcome-footer p { color: #475569; }
+.container.dark .logo-banner {
+  background: linear-gradient(180deg, transparent, rgba(197,160,89,0.06));
+}
+.container.dark .logo-banner-group img {
+  opacity: 0.3;
+}
 
 @media (max-width: 768px) {
   .w-semester-grid { grid-template-columns: 1fr; }

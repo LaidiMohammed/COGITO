@@ -167,8 +167,42 @@ const Welcome = ({ setPage }) => {
         <div className="welcome-stat"><span className="welcome-stat-num">24/7</span><span className="welcome-stat-label">Disponible</span></div>
       </section>
 
+      {/* ── Company Logos Banner ── */}
+      <div className="logo-banner">
+        <div className="logo-banner-track logo-banner-track-1">
+          {[...Array(2)].map((_, i) => (
+            <div className="logo-banner-group" key={i}>
+              <img src={`${import.meta.env.BASE_URL}logos/sonatrach.svg`} alt="Sonatrach" />
+              <img src={`${import.meta.env.BASE_URL}logos/djezzy.svg`} alt="Djezzy" />
+              <img src={`${import.meta.env.BASE_URL}logos/mobilis.svg`} alt="Mobilis" />
+              <img src={`${import.meta.env.BASE_URL}logos/sotramo.png`} alt="Sotramo" />
+              <img src={`${import.meta.env.BASE_URL}logos/ifri.svg`} alt="Ifri" />
+              <img src={`${import.meta.env.BASE_URL}logos/naftal.svg`} alt="Naftal" />
+              <img src={`${import.meta.env.BASE_URL}logos/algerie_poste.svg`} alt="Algérie Poste" />
+              <img src={`${import.meta.env.BASE_URL}logos/air_algerie.svg`} alt="Air Algérie" />
+              <img src={`${import.meta.env.BASE_URL}logos/tosyali.svg`} alt="Tosyali" />
+            </div>
+          ))}
+        </div>
+        <div className="logo-banner-track logo-banner-track-2">
+          {[...Array(2)].map((_, i) => (
+            <div className="logo-banner-group" key={i}>
+              <img src={`${import.meta.env.BASE_URL}logos/tosyali.svg`} alt="Tosyali" />
+              <img src={`${import.meta.env.BASE_URL}logos/air_algerie.svg`} alt="Air Algérie" />
+              <img src={`${import.meta.env.BASE_URL}logos/algerie_poste.svg`} alt="Algérie Poste" />
+              <img src={`${import.meta.env.BASE_URL}logos/naftal.svg`} alt="Naftal" />
+              <img src={`${import.meta.env.BASE_URL}logos/ifri.svg`} alt="Ifri" />
+              <img src={`${import.meta.env.BASE_URL}logos/sotramo.png`} alt="Sotramo" />
+              <img src={`${import.meta.env.BASE_URL}logos/mobilis.svg`} alt="Mobilis" />
+              <img src={`${import.meta.env.BASE_URL}logos/djezzy.svg`} alt="Djezzy" />
+              <img src={`${import.meta.env.BASE_URL}logos/sonatrach.svg`} alt="Sonatrach" />
+            </div>
+          ))}
+        </div>
+      </div>
+
       <footer className="welcome-footer">
-        <p>Cogito — Plateforme collaborative pour étudiants</p>
+        <p>COGITO — Plateforme collaborative pour étudiants</p>
       </footer>
     </div>
   );

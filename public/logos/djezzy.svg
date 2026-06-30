@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 120" fill="none">
+  <rect width="400" height="120" rx="8" fill="#E60000"/>
+  <text x="200" y="62" font-family="Arial Black, sans-serif" font-size="36" font-weight="900" fill="white" text-anchor="middle" letter-spacing="3">
+    DJEZZY
+  </text>
+  <text x="200" y="90" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="rgba(255,255,255,0.85)" text-anchor="middle" letter-spacing="8">
+    جازي
+  </text>
+  <circle cx="40" cy="60" r="18" fill="rgba(255,255,255,0.15)"/>
+  <text x="40" y="67" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="white" text-anchor="middle">G</text>
+  <circle cx="360" cy="60" r="18" fill="rgba(255,255,255,0.15)"/>
+  <text x="360" y="67" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="white" text-anchor="middle">3</text>
+</svg>

@@ -238,6 +238,26 @@ const AdminPanel = ({ onClose }) => {
                   ))}
                 </div>
 
+                {/* Recent jobs */}
+                {jobs.length > 0 && (
+                  <div className="ap-recent-section">
+                    <h3>Offres récentes</h3>
+                    <div className="ap-recent-list">
+                      {jobs.slice(0, 5).map((j) => (
+                        <div key={j.id} className="ap-recent-item">
+                          <div className="ap-recent-info">
+                            <strong>{j.title}</strong>
+                            <span className="ap-recent-meta">{j.organisation || j.employerName} · {j.category}</span>
+                          </div>
+                          <span className={`ap-badge ${j.status === "open" ? "ap-badge-active" : "ap-badge-banned"}`}>
+                            {j.status === "open" ? "Ouvert" : "Fermé"}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {/* Mini charts row */}
                 <div className="ap-charts-row">
                   <div className="ap-chart-card">

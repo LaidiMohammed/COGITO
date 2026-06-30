@@ -124,6 +124,45 @@
 .ap-stat-label { font-size: 12px; color: #64748b; font-weight: 600; margin-top: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
 .ap-stat-sub { font-size: 11px; color: #475569; margin-top: 4px; }
 
+/* ── Recent Jobs on Dashboard ────────────────────────────── */
+.ap-recent-section {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.ap-recent-section h3 {
+  font-size: 14px; font-weight: 600; color: #e2e8f0;
+  margin: 0 0 12px;
+}
+.ap-recent-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ap-recent-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 8px;
+}
+.ap-recent-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.ap-recent-info strong {
+  font-size: 13px;
+  color: #e2e8f0;
+}
+.ap-recent-meta {
+  font-size: 11px;
+  color: #64748b;
+}
+
 /* ── Chart cards ────────────────────────────────────────── */
 .ap-charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .ap-chart-card {

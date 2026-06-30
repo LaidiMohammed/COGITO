@@ -23,12 +23,28 @@ const App = () => {
   const { currentUser, isLoading, fetchUserInfo, setUser } = useUserStore();
   const { darkMode, toggleDarkMode, showSettings, toggleSettings } = useChatStore();
 
-  const [page, setPage] = useState("home");
-  const [active, setActive] = useState("home");
+  const [page, setPage] = useState(() => {
+    return window.location.hash.replace("#", "") || "home";
+  });
+  const [active, setActive] = useState(page);
   const [showAdmin, setShowAdmin] = useState(false);
 
-  const changePage = (p) => { setPage(p); setActive(p); };
+  const changePage = (p) => {
+    setPage(p);
+    setActive(p);
+    window.location.hash = p;
+  };
   const handleLogout = () => { auth.signOut(); };
+
+  useEffect(() => {
+    const onHash = () => {
+      const p = window.location.hash.replace("#", "") || "home";
+      setPage(p);
+      setActive(p);
+    };
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
+  }, []);
 
   useEffect(() => {
     const unSub = onAuthStateChanged(auth, (user) => {
