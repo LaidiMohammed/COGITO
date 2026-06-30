@@ -1,7 +1,7 @@
 import "./Navbar.css";
 import { useChatStore } from "../../lib/chatStore";
 import { useUserStore } from "../../lib/userStore";
-import { MessageCircle, Users, Video, BookOpen, Bot, Briefcase, Info, Settings, ShieldCheck, Crown } from "lucide-react";
+import { MessageCircle, Users, Video, BookOpen, Bot, Briefcase, Settings, ShieldCheck, Crown } from "lucide-react";
 
 const NAV_ITEMS = [
   { key: "chat", icon: MessageCircle, label: "Chat" },
@@ -10,7 +10,6 @@ const NAV_ITEMS = [
   { key: "cours", icon: BookOpen, label: "Cours" },
   { key: "cogi", icon: Bot, label: "Cogi IA" },
   { key: "jobs", icon: Briefcase, label: "Job Étudiant" },
-  { key: "about", icon: Info, label: "About Us" },
 ];
 
 const Navbar = ({ setPage, active, onOpenAdmin }) => {
@@ -33,7 +32,7 @@ const Navbar = ({ setPage, active, onOpenAdmin }) => {
       </ul>
 
       <div className="nav-right">
-        {currentUser?.plan === "pro" && <Crown size={16} className="nav-pro-icon" title="Compte Pro" />}
+        {currentUser?.role === "pro" && <Crown size={16} className="nav-pro-icon" title="Compte Pro" />}
         {onOpenAdmin && (
           <button className="nav-admin-btn" onClick={onOpenAdmin} title="Administrateur">
             <ShieldCheck size={18} />

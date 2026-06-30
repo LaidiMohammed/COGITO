@@ -8,6 +8,7 @@ import Cours from "./components/Cours/Cours";
 import Cogi from "./components/Cogi/Cogi";
 import Jobs from "./components/Jobs/Jobs";
 import About from "./components/About/About";
+import Premium from "./pages/Premium";
 import AdminPanel from "./components/Admin/AdminPanel";
 import ChatPage from "./pages/ChatPage";
 import Settings from "./components/Settings/Settings";
@@ -17,7 +18,7 @@ import { auth } from "./lib/firebase";
 import { useEffect, useState } from "react";
 import { useUserStore } from "./lib/userStore";
 import { useChatStore } from "./lib/chatStore";
-import { Ban } from "lucide-react";
+import { Ban, Crown, Lock } from "lucide-react";
 
 const App = () => {
   const { currentUser, isLoading, fetchUserInfo, setUser } = useUserStore();
@@ -29,7 +30,14 @@ const App = () => {
   const [active, setActive] = useState(page);
   const [showAdmin, setShowAdmin] = useState(false);
 
+  const canAccess = (p) => {
+    if (currentUser?.role === "admin" || currentUser?.role === "pro") return true;
+    const freePages = ["home", "chat", "groups", "meet", "jobs", "premium"];
+    return freePages.includes(p);
+  };
+
   const changePage = (p) => {
+    if (!canAccess(p)) p = "home";
     setPage(p);
     setActive(p);
     window.location.hash = p;
@@ -107,6 +115,7 @@ const App = () => {
               {page === "cogi" && <Cogi />}
               {page === "jobs" && <Jobs setPage={changePage} />}
               {page === "about" && <About />}
+              {page === "premium" && <Premium user={currentUser} setUser={setUser} />}
             </div>
 
             <Settings

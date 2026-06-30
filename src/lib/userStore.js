@@ -31,6 +31,7 @@ export const useUserStore = create((set) => ({
           avatar: auth.currentUser?.photoURL || "",
           role: "student",
           plan: "free",
+          premiumRequested: false,
           blocked: [],
         });
         set({
@@ -41,6 +42,7 @@ export const useUserStore = create((set) => ({
             avatar: auth.currentUser?.photoURL || "",
             role: "student",
             plan: "free",
+            premiumRequested: false,
             blocked: [],
           },
           isLoading: false,
@@ -58,6 +60,7 @@ export const useUserStore = create((set) => ({
             avatar: fallback.photoURL || "",
             role: "student",
             plan: "free",
+            premiumRequested: false,
             blocked: [],
           },
           isLoading: false,

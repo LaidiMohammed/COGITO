@@ -16,6 +16,9 @@ import {
   Link,
   Share2,
   QrCode,
+  Crown,
+  Info,
+  ExternalLink,
 } from "lucide-react";
 import "./Settings.css";
 import { toast } from "react-toastify";
@@ -564,6 +567,67 @@ const Settings = ({
     </div>
   );
 
+  const AboutSection = () => (
+    <div className="settings-section">
+      <SectionHeader title="À Propos" />
+      <div className="help-content" style={{ padding: "0 20px", lineHeight: 1.8 }}>
+        <p style={{ color: "var(--text-primary)" }}>
+          <strong>Cogito</strong> est une plateforme collaborative destinée aux étudiants
+          algériens. Elle permet d'échanger, d'apprendre et de se connecter via le chat,
+          les groupes d'étude, les réunions vidéo, et bien plus encore.
+        </p>
+        <p style={{ color: "var(--text-secondary)", fontSize: 14 }}>
+          Version 1.0 — Développé avec ❤️ pour la communauté étudiante.
+        </p>
+        <div style={{ marginTop: 16, padding: "12px 16px", background: "rgba(197,160,89,0.1)", borderRadius: 8, fontSize: 13, color: "var(--text-secondary)" }}>
+          Cogito ergo sum — "Je pense, donc je suis."
+        </div>
+      </div>
+    </div>
+  );
+
+  const PlanSection = () => (
+    <div className="settings-section">
+      <SectionHeader title="Mon Plan" />
+      <div className="help-content" style={{ padding: "0 20px" }}>
+        {user?.role === "pro" ? (
+          <div style={{ textAlign: "center", padding: "20px 0" }}>
+            <Crown size={48} style={{ color: "#c5a059", marginBottom: 12 }} />
+            <h3 style={{ color: "var(--text-primary)", margin: "0 0 8px" }}>Compte Pro</h3>
+            <p style={{ color: "var(--text-secondary)", fontSize: 14 }}>
+              Vous avez accès à toutes les fonctionnalités premium.
+            </p>
+            <span style={{ display: "inline-block", background: "rgba(197,160,89,0.15)", color: "#c5a059", padding: "4px 12px", borderRadius: 20, fontSize: 12, fontWeight: 600 }}>
+              ✓ Premium Actif
+            </span>
+          </div>
+        ) : user?.premiumRequested ? (
+          <div style={{ textAlign: "center", padding: "20px 0" }}>
+            <div style={{ fontSize: 48, marginBottom: 12 }}>⏳</div>
+            <h3 style={{ color: "var(--text-primary)", margin: "0 0 8px" }}>En attente</h3>
+            <p style={{ color: "var(--text-secondary)", fontSize: 14 }}>
+              Votre demande d'activation Pro est en cours de vérification.
+            </p>
+          </div>
+        ) : (
+          <div style={{ textAlign: "center", padding: "20px 0" }}>
+            <div style={{ fontSize: 48, marginBottom: 12 }}>📋</div>
+            <h3 style={{ color: "var(--text-primary)", margin: "0 0 8px" }}>Plan Gratuit</h3>
+            <p style={{ color: "var(--text-secondary)", fontSize: 14, marginBottom: 16 }}>
+              Chat, Groupes, Meet et Jobs Étudiant.
+            </p>
+            <button
+              onClick={() => { window.location.hash = "premium"; onClose(); }}
+              style={{ background: "#c5a059", color: "#1e293b", border: "none", padding: "10px 24px", borderRadius: 8, fontWeight: 600, cursor: "pointer" }}
+            >
+              Passer à Pro — 499 DA/mois
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
   const renderMain = () => (
     <>
       {/* Header */}
@@ -672,6 +736,17 @@ const Settings = ({
           <ChevronRight size={16} className="chevron" />
         </div>
 
+        <div className="settings-item" onClick={() => setActiveSection("plan")}>
+          <div
+            className="settings-icon"
+            style={{ backgroundColor: "#c5a059", color: "#fff" }}
+          >
+            <Crown size={18} />
+          </div>
+          <span>Mon Plan</span>
+          <ChevronRight size={16} className="chevron" />
+        </div>
+
         <div className="settings-item" onClick={() => setActiveSection("help")}>
           <div
             className="settings-icon"
@@ -680,6 +755,17 @@ const Settings = ({
             <HelpCircle size={18} />
           </div>
           <span>Aide & Support</span>
+          <ChevronRight size={16} className="chevron" />
+        </div>
+
+        <div className="settings-item" onClick={() => setActiveSection("about")}>
+          <div
+            className="settings-icon"
+            style={{ backgroundColor: "#6366f1", color: "#fff" }}
+          >
+            <Info size={18} />
+          </div>
+          <span>À Propos</span>
           <ChevronRight size={16} className="chevron" />
         </div>
 
@@ -712,6 +798,10 @@ const Settings = ({
         return <PrivacySection />;
       case "theme":
         return <ThemeSection />;
+      case "plan":
+        return <PlanSection />;
+      case "about":
+        return <AboutSection />;
       case "help":
         return <HelpSection />;
       default:

@@ -70,10 +70,8 @@ const AdminPanel = ({ onClose }) => {
   const [users, setUsers] = useState([]);
   const [groups, setGroups] = useState([]);
   const [meetings, setMeetings] = useState([]);
-  const [jobs, setJobs] = useState([]);
   const [searchUser, setSearchUser] = useState("");
   const [searchGroup, setSearchGroup] = useState("");
-  const [searchJob, setSearchJob] = useState("");
   const [timeScale, setTimeScale] = useState("day");
   const [selectedGroup, setSelectedGroup] = useState(null);
 
@@ -95,13 +93,6 @@ const AdminPanel = ({ onClose }) => {
     const q = query(collection(db, "meetings"), orderBy("date", "desc"));
     const unsub = onSnapshot(q, (s) =>
       setMeetings(s.docs.map((d) => ({ id: d.id, ...d.data() })))
-    );
-    return unsub;
-  }, []);
-
-  useEffect(() => {
-    const unsub = onSnapshot(collection(db, "jobs"), (s) =>
-      setJobs(s.docs.map((d) => ({ id: d.id, ...d.data() })))
     );
     return unsub;
   }, []);
@@ -156,22 +147,33 @@ const AdminPanel = ({ onClose }) => {
     await deleteDoc(doc(db, "meetings", m.id));
   };
 
-  const deleteJob = async (j) => {
-    if (!window.confirm(`Supprimer l'offre "${j.title}" ?`)) return;
-    await deleteDoc(doc(db, "jobs", j.id));
-  };
-
   const filteredUsers = users.filter((u) =>
     (u.username || u.email || "").toLowerCase().includes(searchUser.toLowerCase())
   );
   const filteredGroups = groups.filter((g) =>
     (g.groupName || "").toLowerCase().includes(searchGroup.toLowerCase())
   );
-  const filteredJobs = jobs.filter((j) =>
-    (j.title || "").toLowerCase().includes(searchJob.toLowerCase())
-  );
   const activeUsers = users.filter((u) => !u.banned).length;
   const bannedUsers = users.filter((u) => u.banned).length;
+
+  /* ── Memberships helpers ────────────────────────────── */
+  const approvalQueue = users.filter((u) => u.premiumRequested && u.role !== "pro");
+  const proUsers = users.filter((u) => u.role === "pro");
+
+  const approvePro = async (u) => {
+    if (!window.confirm(`Approuver ${u.username || u.email} comme membre Pro ?`)) return;
+    await updateDoc(doc(db, "users", u.id), { role: "pro", paymentVerified: true });
+  };
+
+  const rejectPro = async (u) => {
+    if (!window.confirm(`Refuser la demande Pro de ${u.username || u.email} ?`)) return;
+    await updateDoc(doc(db, "users", u.id), { plan: "free", premiumRequested: false });
+  };
+
+  const revokePro = async (u) => {
+    if (!window.confirm(`Rétrograder ${u.username || u.email} au plan gratuit ?`)) return;
+    await updateDoc(doc(db, "users", u.id), { role: "student", plan: "free", premiumRequested: false });
+  };
 
   /* ── Nav items ──────────────────────────────────────── */
   const navItems = [
@@ -180,8 +182,8 @@ const AdminPanel = ({ onClose }) => {
     { id: "users", label: "Utilisateurs" },
     { id: "groups", label: "Groupes" },
     { id: "meets", label: "Réunions" },
-    { id: "jobs", label: "Jobs" },
     { id: "offers", label: "Offres" },
+    { id: "memberships", label: "Adhésions" },
     { id: "permissions", label: "Permissions" },
   ];
 
@@ -228,7 +230,6 @@ const AdminPanel = ({ onClose }) => {
                   {[
                     { label: "Total Utilisateurs", value: users.length, sub: `Actifs: ${activeUsers} | Bannis: ${bannedUsers}`, color: "#3b82f6" },
                     { label: "Groupes", value: groups.length, sub: "Espaces de collaboration", color: "#10b981" },
-                    { label: "Offres", value: jobs.length, sub: "Jobs étudiants", color: "#f59e0b" },
                     { label: "Réunions", value: meetings.length, sub: "Sessions vidéo", color: "#8b5cf6" },
                     { label: "Système", value: "Optimal", sub: "Tous services actifs", color: "#C5A059" },
                   ].map((s) => (
@@ -239,26 +240,6 @@ const AdminPanel = ({ onClose }) => {
                     </div>
                   ))}
                 </div>
-
-                {/* Recent jobs */}
-                {jobs.length > 0 && (
-                  <div className="ap-recent-section">
-                    <h3>Offres récentes</h3>
-                    <div className="ap-recent-list">
-                      {jobs.slice(0, 5).map((j) => (
-                        <div key={j.id} className="ap-recent-item">
-                          <div className="ap-recent-info">
-                            <strong>{j.title}</strong>
-                            <span className="ap-recent-meta">{j.organisation || j.employerName} · {j.category}</span>
-                          </div>
-                          <span className={`ap-badge ${j.status === "open" ? "ap-badge-active" : "ap-badge-banned"}`}>
-                            {j.status === "open" ? "Ouvert" : "Fermé"}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
 
                 {/* Mini charts row */}
                 <div className="ap-charts-row">
@@ -481,38 +462,82 @@ const AdminPanel = ({ onClose }) => {
               </div>
             )}
 
-            {/* ── JOBS ── */}
-            {tab === "jobs" && (
+            {/* ── OFFERS (AdminOffers) ── */}
+            {tab === "offers" && <AdminOffers />}
+
+            {/* ── MEMBERSHIPS ── */}
+            {tab === "memberships" && (
               <div className="ap-section">
-                <div className="ap-search-bar">
-                  <input placeholder="Rechercher une offre…" value={searchJob} onChange={(e) => setSearchJob(e.target.value)} />
-                  <span className="ap-count">{filteredJobs.length} offre(s)</span>
+                <div className="ap-search-bar" style={{ marginBottom: 20 }}>
+                  <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600 }}>
+                    Demandes en attente ({approvalQueue.length})
+                  </h3>
                 </div>
-                <div className="ap-table-wrap">
+                <div className="ap-table-wrap" style={{ marginBottom: 32 }}>
                   <table className="ap-table">
-                    <thead><tr><th>Titre</th><th>Catégorie</th><th>Employeur</th><th>Candidats</th><th>Statut</th><th>Actions</th></tr></thead>
+                    <thead><tr><th>Utilisateur</th><th>Email</th><th>Plan</th><th>Actions</th></tr></thead>
                     <tbody>
-                      {filteredJobs.length === 0 && <tr><td colSpan={6} className="ap-empty">Aucune offre.</td></tr>}
-                      {filteredJobs.map((j) => (
-                        <tr key={j.id}>
-                          <td><strong>{j.title}</strong></td>
-                          <td><span className="ap-badge ap-badge-user">{j.category}</span></td>
-                          <td><small>{j.employerName || "—"}</small></td>
-                          <td>{j.applicants?.length || 0}</td>
+                      {approvalQueue.length === 0 && (
+                        <tr><td colSpan={4} className="ap-empty">Aucune demande en attente.</td></tr>
+                      )}
+                      {approvalQueue.map((u) => (
+                        <tr key={u.id}>
                           <td>
-                            <span className={`ap-badge ${j.status === "open" ? "ap-badge-active" : "ap-badge-banned"}`}>
-                              {j.status === "open" ? "Ouvert" : "Fermé"}
-                            </span>
+                            <div className="ap-td-user">
+                              <div className="ap-avatar">
+                                {u.avatar && !u.avatar.startsWith("./")
+                                  ? <img src={u.avatar} alt="" />
+                                  : <span>{(u.username || u.email || "?")[0].toUpperCase()}</span>}
+                              </div>
+                              <strong>{u.name || u.username || "—"}</strong>
+                            </div>
+                          </td>
+                          <td style={{ color: "#94a3b8", fontSize: 13 }}>{u.email}</td>
+                          <td>
+                            <span className="ap-badge" style={{ background: "rgba(197,160,89,0.15)", color: "#c5a059" }}>Pro demandé</span>
                           </td>
                           <td>
                             <div className="ap-actions">
-                              <button className="ap-btn ap-btn-gold" onClick={() => updateDoc(doc(db, "jobs", j.id), {
-                                status: j.status === "open" ? "closed" : "open"
-                              })}>
-                                {j.status === "open" ? "Fermer" : "Ouvrir"}
-                              </button>
-                              <button className="ap-btn ap-btn-red" onClick={() => deleteJob(j)}>Supprimer</button>
+                              <button className="ap-btn ap-btn-green" onClick={() => approvePro(u)}>Approuver</button>
+                              <button className="ap-btn ap-btn-red" onClick={() => rejectPro(u)}>Refuser</button>
                             </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="ap-search-bar" style={{ marginBottom: 20 }}>
+                  <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600 }}>
+                    Membres Pro ({proUsers.length})
+                  </h3>
+                </div>
+                <div className="ap-table-wrap">
+                  <table className="ap-table">
+                    <thead><tr><th>Utilisateur</th><th>Email</th><th>Plan</th><th>Actions</th></tr></thead>
+                    <tbody>
+                      {proUsers.length === 0 && (
+                        <tr><td colSpan={4} className="ap-empty">Aucun membre Pro.</td></tr>
+                      )}
+                      {proUsers.map((u) => (
+                        <tr key={u.id}>
+                          <td>
+                            <div className="ap-td-user">
+                              <div className="ap-avatar">
+                                {u.avatar && !u.avatar.startsWith("./")
+                                  ? <img src={u.avatar} alt="" />
+                                  : <span>{(u.username || u.email || "?")[0].toUpperCase()}</span>}
+                              </div>
+                              <strong>{u.name || u.username || "—"}</strong>
+                            </div>
+                          </td>
+                          <td style={{ color: "#94a3b8", fontSize: 13 }}>{u.email}</td>
+                          <td>
+                            <span className="ap-badge" style={{ background: "rgba(16,185,129,0.15)", color: "#10b981" }}>Pro ✓</span>
+                          </td>
+                          <td>
+                            <button className="ap-btn ap-btn-red" onClick={() => revokePro(u)}>Rétrograder</button>
                           </td>
                         </tr>
                       ))}
@@ -521,9 +546,6 @@ const AdminPanel = ({ onClose }) => {
                 </div>
               </div>
             )}
-
-            {/* ── OFFERS (AdminOffers) ── */}
-            {tab === "offers" && <AdminOffers />}
 
             {/* ── PERMISSIONS ── */}
             {tab === "permissions" && (

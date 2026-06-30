@@ -202,6 +202,7 @@ const Login = () => {
         avatar: "",
         role: "student",
         plan,
+        premiumRequested: plan === "pro",
         billingCycle: plan === "pro" ? billingCycle : null,
         paymentVerified: false,
         emailVerified: false,
