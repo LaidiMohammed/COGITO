@@ -7,6 +7,7 @@ import Meet from "./components/Meet/Meet";
 import Cours from "./components/Cours/Cours";
 import Cogi from "./components/Cogi/Cogi";
 import Jobs from "./components/Jobs/Jobs";
+import About from "./components/About/About";
 import AdminPanel from "./components/Admin/AdminPanel";
 import ChatPage from "./pages/ChatPage";
 import Settings from "./components/Settings/Settings";
@@ -89,7 +90,7 @@ const App = () => {
               {page === "cours" && <Cours />}
               {page === "cogi" && <Cogi />}
               {page === "jobs" && <Jobs setPage={changePage} />}
-              {page === "about" && <div className="page-placeholder"><h2>About Us</h2><p>Page à venir...</p></div>}
+              {page === "about" && <About />}
             </div>
 
             <Settings
